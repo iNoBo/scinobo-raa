@@ -1,0 +1,33 @@
+name: Build and Push Docker Image  # Name of the workflow
+
+# Event triggers (push to specific branches)
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to the branch
+
+# Define jobs
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu environment
+
+    # Steps to be executed within this job
+    steps:
+      # Step to check out the code
+      - uses: actions/checkout@v3
+        name: Check out code
+
+      # Step to build and push a Docker image
+      - uses: mr-smithers-excellent/docker-build-push@v6
+        name: Build and push Docker image
+        with:
+          image: intelligencenoborders/scinobo-raa  # Confirm this is your image name
+          tags: v0.1.0,latest  # This is the Docker tag
+          registry: docker.io  # Ensure this is your Docker registry
+          dockerfile: Dockerfile  # Dockerfile to use
+          username: ${{ secrets.DOCKER_USERNAME }}  # Docker username
+          password: ${{ secrets.DOCKER_PASSWORD }}  # Docker password
+      
+      # # Step to run Pytest in Docker
+      # - name: Run Pytest in Docker
+      #   run: docker run --rm -w /app intelligencenoborders/inobo:raa pytest tests/
