@@ -1,0 +1,190 @@
+abdominal ct
+acquisitions
+angiogram
+angiograms
+archive
+archives
+biobank
+biobanks
+biorepository
+biorepositories
+cancer registry
+cancer registries
+case study
+case studies
+catalog
+catalogs
+catalogue
+catalogues
+chart
+charts
+chest computed tomography
+clinical data
+clinical study
+clinical studies
+clinical trial
+clinical trials
+collection
+collections
+compendium
+compilation
+compilations
+computed tomogram
+computed tomograms
+computed tomographies
+computed tomography
+computed tomography scan
+computer tomography
+computer tomographies
+computerized tomography
+computerized tomographies
+computerized tomography ct
+contrast enhanced computed tomography
+corpora
+corpus
+ct image
+ct images
+ct scan
+ct scans
+data
+data analysis
+data base
+data bases
+data lake
+data lakes
+data set
+data sets
+data warehouse
+data warehouses
+data-bank
+data-banks
+data-base
+data-bases
+data-lake
+data-lakes
+data-set
+data-sets
+databanks
+database
+databases
+datalake
+datalakes
+dataset
+datasets
+descriptive analysis
+descriptive study
+descriptive studies
+diaries
+diary
+dump
+dumps
+ehr
+electronic health record
+electronic health records
+electronic medical record
+electronic medical records
+electronic patient record
+electronic patient records
+experimental study
+experimental studies
+feasibility trial
+feasibility trials
+health record
+health records
+historical data
+hologram
+holograms
+hospital episode statistics
+hospital record
+hospital records
+household survey
+household surveys
+image
+images
+interview
+interviews
+knowledge base
+knowledge bases
+knowledgebase
+knowledgebases
+magnetic resonance image
+magnetic resonance images
+manuscript
+manuscripts
+medical record
+medical records
+memo
+memos
+mri
+mris
+narrative review
+national database
+national databases
+national survey
+national surveys
+neurological examination
+neurological examinations
+observational data
+online survey
+online surveys
+patient registry
+patient registries
+patient survey
+patient surveys
+pilot study
+pilot studies
+population data
+qualitative analysis
+questionnaire
+questionnaires
+radiation hybrid mapping
+radiation hybrid mappings
+radiograph
+radiographs
+randomised controlled trial
+randomised controlled trials
+randomised trial
+randomised trials
+randomized control trial
+randomized control trials
+randomized controlled trial rct
+randomized study
+randomized studies
+randomized trial
+randomized trials
+rct
+record
+records
+registry
+registries
+repo
+repos
+repositories
+repository
+scan
+scans
+segmentation
+segmentations
+self report
+self reports
+sonogram
+sonograms
+spatial statistics
+stereogram
+stereograms
+survey
+survey data
+surveys
+t mri
+taxonomy
+taxonomies
+tomogram
+tomograms
+treatment study
+treatment studies
+trial
+trials
+ultrasound scan
+ultrasound scans
+validation study
+validation studies

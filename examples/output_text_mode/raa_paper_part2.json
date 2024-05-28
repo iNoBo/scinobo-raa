@@ -1,0 +1,254 @@
+{
+ "input_path": "examples/input/raa_paper_part2.txt",
+ "text_list": [
+  [
+   "Scientific research is dynamically and rapidly evolving, generating an overwhelming amount of knowledge in the form of research outputs. \n",
+   "The vastness and the intricacies of scientific literature makes it impossible for researchers to keep up with all advancements in their respective fields, which is critical to their research. \n",
+   "Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n",
+   "Moreover, recent efforts have been directed towards identifying corresponding metadata and classifying those RAs based on their functions, such as their usage and provenance (Du et al., 2021; Schindler et al., 2021)."
+  ]
+ ],
+ "research_artifacts": {
+  "candidates_metadata": {
+   "C0": {
+    "type": "dataset",
+    "indices": [
+     0,
+     2
+    ],
+    "trigger": "datasets",
+    "trigger_offset": [
+     193,
+     201
+    ],
+    "snippet": "Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n",
+    "snippet_offset": [
+     333,
+     785
+    ],
+    "paragraph": "Scientific research is dynamically and rapidly evolving, generating an overwhelming amount of knowledge in the form of research outputs. \n The vastness and the intricacies of scientific literature makes it impossible for researchers to keep up with all advancements in their respective fields, which is critical to their research. \n Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n Moreover, recent efforts have been directed towards identifying corresponding metadata and classifying those RAs based on their functions, such as their usage and provenance (Du et al., 2021; Schindler et al., 2021).",
+    "citations": [
+     [
+      "(Wang et al., 2022; Kr\u00fcger and Schindler, 2020)"
+     ],
+     [],
+     [],
+     [],
+     []
+    ],
+    "results": {
+     "artifact_answer": {
+      "Yes": 0.013080432689358528,
+      "No": 0.9869195673106415
+     }
+    }
+   },
+   "C1": {
+    "type": "gaz_dataset",
+    "indices": [
+     0,
+     2
+    ],
+    "trigger": "Goal",
+    "trigger_offset": [
+     234,
+     238
+    ],
+    "snippet": "Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n",
+    "snippet_offset": [
+     333,
+     785
+    ],
+    "paragraph": "Scientific research is dynamically and rapidly evolving, generating an overwhelming amount of knowledge in the form of research outputs. \n The vastness and the intricacies of scientific literature makes it impossible for researchers to keep up with all advancements in their respective fields, which is critical to their research. \n Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n Moreover, recent efforts have been directed towards identifying corresponding metadata and classifying those RAs based on their functions, such as their usage and provenance (Du et al., 2021; Schindler et al., 2021).",
+    "citations": [
+     [
+      "(Wang et al., 2022; Kr\u00fcger and Schindler, 2020)"
+     ],
+     [],
+     [],
+     [],
+     []
+    ],
+    "results": {
+     "artifact_answer": {
+      "Yes": 0.003940040291575367,
+      "No": 0.9960599597084246
+     }
+    }
+   },
+   "C2": {
+    "type": "software",
+    "indices": [
+     0,
+     2
+    ],
+    "trigger": "models",
+    "trigger_offset": [
+     251,
+     257
+    ],
+    "snippet": "Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n",
+    "snippet_offset": [
+     333,
+     785
+    ],
+    "paragraph": "Scientific research is dynamically and rapidly evolving, generating an overwhelming amount of knowledge in the form of research outputs. \n The vastness and the intricacies of scientific literature makes it impossible for researchers to keep up with all advancements in their respective fields, which is critical to their research. \n Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n Moreover, recent efforts have been directed towards identifying corresponding metadata and classifying those RAs based on their functions, such as their usage and provenance (Du et al., 2021; Schindler et al., 2021).",
+    "citations": [
+     [
+      "(Wang et al., 2022; Kr\u00fcger and Schindler, 2020)"
+     ],
+     [],
+     [],
+     [],
+     []
+    ],
+    "results": {
+     "artifact_answer": {
+      "Yes": 0.0018843407238453682,
+      "No": 0.9981156592761546
+     }
+    }
+   },
+   "C3": {
+    "type": "software",
+    "indices": [
+     0,
+     2
+    ],
+    "trigger": "methods",
+    "trigger_offset": [
+     348,
+     355
+    ],
+    "snippet": "Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n",
+    "snippet_offset": [
+     333,
+     785
+    ],
+    "paragraph": "Scientific research is dynamically and rapidly evolving, generating an overwhelming amount of knowledge in the form of research outputs. \n The vastness and the intricacies of scientific literature makes it impossible for researchers to keep up with all advancements in their respective fields, which is critical to their research. \n Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n Moreover, recent efforts have been directed towards identifying corresponding metadata and classifying those RAs based on their functions, such as their usage and provenance (Du et al., 2021; Schindler et al., 2021).",
+    "citations": [
+     [
+      "(Wang et al., 2022; Kr\u00fcger and Schindler, 2020)"
+     ],
+     [],
+     [],
+     [],
+     []
+    ],
+    "results": {
+     "artifact_answer": {
+      "Yes": 0.0010448093659312031,
+      "No": 0.9989551906340688
+     }
+    }
+   },
+   "C4": {
+    "type": "dataset",
+    "indices": [
+     0,
+     2
+    ],
+    "trigger": "datasets",
+    "trigger_offset": [
+     383,
+     391
+    ],
+    "snippet": "Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n",
+    "snippet_offset": [
+     333,
+     785
+    ],
+    "paragraph": "Scientific research is dynamically and rapidly evolving, generating an overwhelming amount of knowledge in the form of research outputs. \n The vastness and the intricacies of scientific literature makes it impossible for researchers to keep up with all advancements in their respective fields, which is critical to their research. \n Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n Moreover, recent efforts have been directed towards identifying corresponding metadata and classifying those RAs based on their functions, such as their usage and provenance (Du et al., 2021; Schindler et al., 2021).",
+    "citations": [
+     [
+      "(Wang et al., 2022; Kr\u00fcger and Schindler, 2020)"
+     ],
+     [],
+     [],
+     [],
+     []
+    ],
+    "results": {
+     "artifact_answer": {
+      "Yes": 0.006335405355083866,
+      "No": 0.9936645946449162
+     }
+    }
+   },
+   "C5": {
+    "type": "software",
+    "indices": [
+     0,
+     2
+    ],
+    "trigger": "software",
+    "trigger_offset": [
+     393,
+     401
+    ],
+    "snippet": "Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n",
+    "snippet_offset": [
+     333,
+     785
+    ],
+    "paragraph": "Scientific research is dynamically and rapidly evolving, generating an overwhelming amount of knowledge in the form of research outputs. \n The vastness and the intricacies of scientific literature makes it impossible for researchers to keep up with all advancements in their respective fields, which is critical to their research. \n Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n Moreover, recent efforts have been directed towards identifying corresponding metadata and classifying those RAs based on their functions, such as their usage and provenance (Du et al., 2021; Schindler et al., 2021).",
+    "citations": [
+     [
+      "(Wang et al., 2022; Kr\u00fcger and Schindler, 2020)"
+     ],
+     [],
+     [],
+     [],
+     []
+    ],
+    "results": {
+     "artifact_answer": {
+      "Yes": 0.0016459828076497824,
+      "No": 0.9983540171923502
+     }
+    }
+   },
+   "C6": {
+    "type": "software",
+    "indices": [
+     0,
+     3
+    ],
+    "trigger": "functions",
+    "trigger_offset": [
+     128,
+     137
+    ],
+    "snippet": "Moreover, recent efforts have been directed towards identifying corresponding metadata and classifying those RAs based on their functions, such as their usage and provenance (Du et al., 2021; Schindler et al., 2021).",
+    "snippet_offset": [
+     787,
+     1003
+    ],
+    "paragraph": "Scientific research is dynamically and rapidly evolving, generating an overwhelming amount of knowledge in the form of research outputs. \n The vastness and the intricacies of scientific literature makes it impossible for researchers to keep up with all advancements in their respective fields, which is critical to their research. \n Consequently, knowledge discovery from scientific literature and research artifact analysis (RAA) have gained significant prominence as fields. In recent years, many new research artifact (RA) datasets have been constructed, with the goal of training models and creating benchmarks for the identification of a variety of RAs, both intangible (e.g. methods, tasks) and tangible (e.g. datasets, software) (Wang et al., 2022; Kr\u00fcger and Schindler, 2020). \n Moreover, recent efforts have been directed towards identifying corresponding metadata and classifying those RAs based on their functions, such as their usage and provenance (Du et al., 2021; Schindler et al., 2021).",
+    "citations": [
+     [
+      "(Du et al., 2021; Schindler et al., 2021)"
+     ],
+     [],
+     [],
+     [],
+     []
+    ],
+    "results": {
+     "artifact_answer": {
+      "Yes": 0.058502652863886964,
+      "No": 0.941497347136113
+     }
+    }
+   }
+  },
+  "grouped_clusters": {
+   "dataset": {
+    "name_cluster_0": {}
+   },
+   "software": {
+    "name_cluster_0": {}
+   }
+  }
+ }
+}

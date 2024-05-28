@@ -1,0 +1,4110 @@
+{
+ "Valid": {
+  "precision": 0.950965824665676,
+  "recall": 0.9682299546142209,
+  "f1": 0.9595202398800601,
+  "errors": [
+   [
+    48,
+    0,
+    1
+   ],
+   [
+    65,
+    1,
+    0
+   ],
+   [
+    66,
+    1,
+    0
+   ],
+   [
+    90,
+    0,
+    1
+   ],
+   [
+    100,
+    1,
+    0
+   ],
+   [
+    120,
+    0,
+    1
+   ],
+   [
+    154,
+    1,
+    0
+   ],
+   [
+    297,
+    0,
+    1
+   ],
+   [
+    298,
+    0,
+    1
+   ],
+   [
+    299,
+    0,
+    1
+   ],
+   [
+    342,
+    1,
+    0
+   ],
+   [
+    343,
+    1,
+    0
+   ],
+   [
+    403,
+    0,
+    1
+   ],
+   [
+    405,
+    0,
+    1
+   ],
+   [
+    427,
+    1,
+    0
+   ],
+   [
+    428,
+    1,
+    0
+   ],
+   [
+    429,
+    1,
+    0
+   ],
+   [
+    484,
+    0,
+    1
+   ],
+   [
+    485,
+    0,
+    1
+   ],
+   [
+    486,
+    0,
+    1
+   ],
+   [
+    492,
+    0,
+    1
+   ],
+   [
+    546,
+    0,
+    1
+   ],
+   [
+    547,
+    0,
+    1
+   ],
+   [
+    585,
+    1,
+    0
+   ],
+   [
+    586,
+    1,
+    0
+   ],
+   [
+    587,
+    1,
+    0
+   ],
+   [
+    602,
+    0,
+    1
+   ],
+   [
+    604,
+    0,
+    1
+   ],
+   [
+    609,
+    1,
+    0
+   ],
+   [
+    620,
+    1,
+    0
+   ],
+   [
+    657,
+    0,
+    1
+   ],
+   [
+    659,
+    0,
+    1
+   ],
+   [
+    661,
+    0,
+    1
+   ],
+   [
+    663,
+    1,
+    0
+   ],
+   [
+    667,
+    0,
+    1
+   ],
+   [
+    692,
+    1,
+    0
+   ],
+   [
+    693,
+    1,
+    0
+   ],
+   [
+    699,
+    0,
+    1
+   ],
+   [
+    703,
+    0,
+    1
+   ],
+   [
+    704,
+    0,
+    1
+   ],
+   [
+    705,
+    0,
+    1
+   ],
+   [
+    708,
+    0,
+    1
+   ],
+   [
+    709,
+    0,
+    1
+   ],
+   [
+    762,
+    1,
+    0
+   ],
+   [
+    763,
+    1,
+    0
+   ],
+   [
+    767,
+    0,
+    1
+   ],
+   [
+    769,
+    0,
+    1
+   ],
+   [
+    774,
+    0,
+    1
+   ],
+   [
+    775,
+    0,
+    1
+   ],
+   [
+    777,
+    1,
+    0
+   ],
+   [
+    778,
+    1,
+    0
+   ],
+   [
+    779,
+    0,
+    1
+   ],
+   [
+    785,
+    0,
+    1
+   ],
+   [
+    787,
+    0,
+    1
+   ]
+  ]
+ },
+ "Name": {
+  "precision": 0.8014705882352942,
+  "recall": 0.8515625,
+  "f1": 0.8257575757575757,
+  "exact_match": 0.8390625,
+  "lenient_match": 0.896875,
+  "errors": [
+   [
+    47,
+    0,
+    1
+   ],
+   [
+    55,
+    1,
+    0
+   ],
+   [
+    59,
+    0,
+    1
+   ],
+   [
+    60,
+    0,
+    1
+   ],
+   [
+    100,
+    1,
+    0
+   ],
+   [
+    101,
+    1,
+    0
+   ],
+   [
+    102,
+    1,
+    0
+   ],
+   [
+    152,
+    0,
+    1
+   ],
+   [
+    158,
+    0,
+    1
+   ],
+   [
+    164,
+    0,
+    1
+   ],
+   [
+    178,
+    0,
+    1
+   ],
+   [
+    226,
+    0,
+    1
+   ],
+   [
+    268,
+    0,
+    1
+   ],
+   [
+    269,
+    0,
+    1
+   ],
+   [
+    270,
+    0,
+    1
+   ],
+   [
+    287,
+    1,
+    0
+   ],
+   [
+    289,
+    1,
+    0
+   ],
+   [
+    298,
+    0,
+    1
+   ],
+   [
+    333,
+    1,
+    0
+   ],
+   [
+    372,
+    1,
+    0
+   ],
+   [
+    374,
+    1,
+    0
+   ],
+   [
+    405,
+    1,
+    0
+   ],
+   [
+    406,
+    1,
+    0
+   ],
+   [
+    408,
+    1,
+    0
+   ],
+   [
+    409,
+    1,
+    0
+   ],
+   [
+    411,
+    1,
+    0
+   ],
+   [
+    412,
+    1,
+    0
+   ],
+   [
+    448,
+    0,
+    1
+   ],
+   [
+    510,
+    0,
+    1
+   ],
+   [
+    511,
+    0,
+    1
+   ],
+   [
+    520,
+    1,
+    0
+   ],
+   [
+    521,
+    0,
+    1
+   ],
+   [
+    555,
+    0,
+    1
+   ],
+   [
+    578,
+    0,
+    1
+   ],
+   [
+    579,
+    0,
+    1
+   ],
+   [
+    580,
+    0,
+    1
+   ],
+   [
+    581,
+    0,
+    1
+   ],
+   [
+    582,
+    0,
+    1
+   ],
+   [
+    583,
+    0,
+    1
+   ],
+   [
+    597,
+    1,
+    0
+   ],
+   [
+    598,
+    1,
+    0
+   ],
+   [
+    599,
+    1,
+    0
+   ],
+   [
+    600,
+    0,
+    1
+   ],
+   [
+    601,
+    0,
+    1
+   ],
+   [
+    611,
+    0,
+    1
+   ],
+   [
+    614,
+    0,
+    1
+   ]
+  ],
+  "exact_match_errors": [
+   [
+    47,
+    "NLTK | SpaCy",
+    "N/A | N/A"
+   ],
+   [
+    55,
+    "N/A",
+    "nltk"
+   ],
+   [
+    58,
+    "HeadlineSense",
+    "headline sense"
+   ],
+   [
+    59,
+    "HeadlineSense",
+    "N/A"
+   ],
+   [
+    60,
+    "HeadlineSense",
+    "N/A"
+   ],
+   [
+    62,
+    "News Headlines Dataset",
+    "News Headlines"
+   ],
+   [
+    100,
+    "N/A",
+    "Python"
+   ],
+   [
+    101,
+    "N/A",
+    "Python"
+   ],
+   [
+    102,
+    "N/A",
+    "Python"
+   ],
+   [
+    103,
+    "gaussian process",
+    "gaussian process model"
+   ],
+   [
+    104,
+    "Gaussian Process model",
+    "gaussian process"
+   ],
+   [
+    113,
+    "Moviewatchers Survey Dataset",
+    "Moviewatchers Survey"
+   ],
+   [
+    152,
+    "COVID-19 Patient Dataset",
+    "N/A"
+   ],
+   [
+    158,
+    "COVID-19 Patient Dataset",
+    "N/A"
+   ],
+   [
+    160,
+    "COVID-19 Patient Dataset",
+    "Patient Dataset for COVID-19"
+   ],
+   [
+    164,
+    "COVID-19 Patient Dataset",
+    "N/A"
+   ],
+   [
+    178,
+    "SimuTech",
+    "N/A"
+   ],
+   [
+    210,
+    "optipro",
+    "optpro"
+   ],
+   [
+    226,
+    "musiccorpus",
+    "N/A"
+   ],
+   [
+    268,
+    "NLTK | SpaCy",
+    "N/A | N/A"
+   ],
+   [
+    269,
+    "NLTK | SpaCy",
+    "N/A | N/A"
+   ],
+   [
+    270,
+    "NLTK | SpaCy",
+    "N/A"
+   ],
+   [
+    287,
+    "N/A",
+    "wloong"
+   ],
+   [
+    289,
+    "N/A",
+    "nltk | SpaCy"
+   ],
+   [
+    295,
+    "HeadlineSense",
+    "headline sense"
+   ],
+   [
+    296,
+    "HeadlineSense",
+    "headline sense"
+   ],
+   [
+    297,
+    "HeadlineSense",
+    "headline sense"
+   ],
+   [
+    298,
+    "HeadlineSense",
+    "N/A"
+   ],
+   [
+    299,
+    "HeadlineSense",
+    "headline sense"
+   ],
+   [
+    300,
+    "HeadlineSense",
+    "News Headlines"
+   ],
+   [
+    304,
+    "News Headlines Dataset",
+    "News Headlines"
+   ],
+   [
+    305,
+    "News Headlines Dataset",
+    "headlines"
+   ],
+   [
+    306,
+    "News Headlines Dataset",
+    "News Headlines"
+   ],
+   [
+    313,
+    "News Headlines Dataset",
+    "News Headlines"
+   ],
+   [
+    329,
+    "scikit-learn",
+    "scik-learn"
+   ],
+   [
+    330,
+    "scikit-learn",
+    "Python"
+   ],
+   [
+    333,
+    "N/A",
+    "scikit-learn"
+   ],
+   [
+    346,
+    "Apache Spark | Hadoop",
+    "Apache Spark"
+   ],
+   [
+    372,
+    "N/A",
+    "Deep Learning Models"
+   ],
+   [
+    374,
+    "N/A",
+    "Deep Learning Models"
+   ],
+   [
+    405,
+    "N/A",
+    "Python"
+   ],
+   [
+    406,
+    "N/A",
+    "Python"
+   ],
+   [
+    408,
+    "N/A",
+    "Python"
+   ],
+   [
+    409,
+    "N/A",
+    "Python"
+   ],
+   [
+    411,
+    "N/A",
+    "Github.com/mycustomlibrary"
+   ],
+   [
+    412,
+    "N/A",
+    "Python"
+   ],
+   [
+    413,
+    "gaussian process",
+    "Gaussian process model"
+   ],
+   [
+    414,
+    "gaussian process",
+    "gaussian process model"
+   ],
+   [
+    415,
+    "gaussian process",
+    "gaussian process model"
+   ],
+   [
+    416,
+    "Gaussian Process model",
+    "gaussian process"
+   ],
+   [
+    417,
+    "Gaussian Process model",
+    "gaussian process"
+   ],
+   [
+    418,
+    "Gaussian Process model",
+    "gaussian process"
+   ],
+   [
+    425,
+    "gaussian process",
+    "gaussian processes"
+   ],
+   [
+    426,
+    "gaussian process",
+    "gaussian process model"
+   ],
+   [
+    443,
+    "Moviewatchers Survey Dataset",
+    "Moviewatchers Survey"
+   ],
+   [
+    444,
+    "Moviewatchers Survey Dataset",
+    "Moviewatchers Survey"
+   ],
+   [
+    445,
+    "Moviewatchers Survey Dataset",
+    "Moviewatchers Survey"
+   ],
+   [
+    448,
+    "Moviewatchers Survey Dataset",
+    "N/A"
+   ],
+   [
+    494,
+    "BERT-large",
+    "BERT"
+   ],
+   [
+    510,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    511,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    516,
+    "biLSTM",
+    "bidirectional long short-term memory (biLSTM) models"
+   ],
+   [
+    517,
+    "biLSTM",
+    "bidirectional long short-term memory (biLSTM)"
+   ],
+   [
+    519,
+    "biLSTM",
+    "bidirectional long short-term memory (biLSTM)"
+   ],
+   [
+    520,
+    "N/A",
+    "bidirectional long short-term memory (biLSTM)"
+   ],
+   [
+    521,
+    "convolutional neural network",
+    "N/A"
+   ],
+   [
+    535,
+    "vits",
+    "XPhoneBERT"
+   ],
+   [
+    536,
+    "vits",
+    "XPhoneBERT"
+   ],
+   [
+    538,
+    "binarized statistical image feature (bsif) descriptor",
+    "binary statistical image feature (bsif) descriptor"
+   ],
+   [
+    539,
+    "binarized statistical image feature (bsif) descriptor",
+    "BSIF"
+   ],
+   [
+    541,
+    "Sparse-Quantized Representation (SpQR)",
+    "SpQR"
+   ],
+   [
+    542,
+    "Sparse-Quantized Representation (SpQR)",
+    "SpQR"
+   ],
+   [
+    543,
+    "Sparse-Quantized Representation (SpQR)",
+    "SpQR"
+   ],
+   [
+    552,
+    "XPhoneBERT",
+    "XPB"
+   ],
+   [
+    555,
+    "tts training",
+    "N/A"
+   ],
+   [
+    556,
+    "BERT-large",
+    "BERT"
+   ],
+   [
+    578,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    579,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    580,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    581,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    582,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    583,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    593,
+    "biLSTM",
+    "bidirectional long short-term memory (biLSTM) models"
+   ],
+   [
+    594,
+    "biLSTM",
+    "bidirectional long short-term memory (biLSTM) models"
+   ],
+   [
+    595,
+    "biLSTM",
+    "bidirectional long short-term memory (biLSTM) models"
+   ],
+   [
+    596,
+    "biLSTM",
+    "bidirectional long short-term memory"
+   ],
+   [
+    597,
+    "N/A",
+    "bidirectional long short-term memory (biLSTM)"
+   ],
+   [
+    598,
+    "N/A",
+    "bidirectional long-sufficiency memory"
+   ],
+   [
+    599,
+    "N/A",
+    "bidirectional long short-term memory (biLSTM)"
+   ],
+   [
+    600,
+    "convolutional neural network",
+    "N/A"
+   ],
+   [
+    601,
+    "convolutional neural network",
+    "N/A"
+   ],
+   [
+    611,
+    "vits",
+    "N/A"
+   ],
+   [
+    614,
+    "vits",
+    "N/A"
+   ],
+   [
+    617,
+    "binarized statistical image feature (bsif) descriptor",
+    "binary statistical image feature (bsif) descriptor"
+   ],
+   [
+    618,
+    "binarized statistical image feature (bsif) descriptor",
+    "binary statistical image feature (bsif) descriptor"
+   ],
+   [
+    619,
+    "binarized statistical image feature (bsif) descriptor",
+    "binary statistical image feature (bsif) descriptor"
+   ],
+   [
+    620,
+    "Sparse-Quantized Representation (SpQR)",
+    "SpQR"
+   ],
+   [
+    621,
+    "Sparse-Quantized Representation (SpQR)",
+    "SpQR"
+   ],
+   [
+    622,
+    "Sparse-Quantized Representation (SpQR)",
+    "SpQR"
+   ],
+   [
+    623,
+    "Sparse-Quantized Representation (SpQR)",
+    "SpQR"
+   ],
+   [
+    624,
+    "Sparse-Quantized Representation (SpQR)",
+    "SpQR"
+   ],
+   [
+    635,
+    "XPhoneBERT",
+    "XPB"
+   ],
+   [
+    636,
+    "XPhoneBERT",
+    "XPB"
+   ]
+  ],
+  "lenient_match_errors": [
+   [
+    47,
+    "NLTK | SpaCy",
+    "N/A | N/A"
+   ],
+   [
+    55,
+    "N/A",
+    "nltk"
+   ],
+   [
+    58,
+    "HeadlineSense",
+    "headline sense"
+   ],
+   [
+    59,
+    "HeadlineSense",
+    "N/A"
+   ],
+   [
+    60,
+    "HeadlineSense",
+    "N/A"
+   ],
+   [
+    100,
+    "N/A",
+    "Python"
+   ],
+   [
+    101,
+    "N/A",
+    "Python"
+   ],
+   [
+    102,
+    "N/A",
+    "Python"
+   ],
+   [
+    152,
+    "COVID-19 Patient Dataset",
+    "N/A"
+   ],
+   [
+    158,
+    "COVID-19 Patient Dataset",
+    "N/A"
+   ],
+   [
+    160,
+    "COVID-19 Patient Dataset",
+    "Patient Dataset for COVID-19"
+   ],
+   [
+    164,
+    "COVID-19 Patient Dataset",
+    "N/A"
+   ],
+   [
+    178,
+    "SimuTech",
+    "N/A"
+   ],
+   [
+    210,
+    "optipro",
+    "optpro"
+   ],
+   [
+    226,
+    "musiccorpus",
+    "N/A"
+   ],
+   [
+    268,
+    "NLTK | SpaCy",
+    "N/A | N/A"
+   ],
+   [
+    269,
+    "NLTK | SpaCy",
+    "N/A | N/A"
+   ],
+   [
+    270,
+    "NLTK | SpaCy",
+    "N/A"
+   ],
+   [
+    287,
+    "N/A",
+    "wloong"
+   ],
+   [
+    289,
+    "N/A",
+    "nltk | SpaCy"
+   ],
+   [
+    295,
+    "HeadlineSense",
+    "headline sense"
+   ],
+   [
+    296,
+    "HeadlineSense",
+    "headline sense"
+   ],
+   [
+    297,
+    "HeadlineSense",
+    "headline sense"
+   ],
+   [
+    298,
+    "HeadlineSense",
+    "N/A"
+   ],
+   [
+    299,
+    "HeadlineSense",
+    "headline sense"
+   ],
+   [
+    300,
+    "HeadlineSense",
+    "News Headlines"
+   ],
+   [
+    329,
+    "scikit-learn",
+    "scik-learn"
+   ],
+   [
+    330,
+    "scikit-learn",
+    "Python"
+   ],
+   [
+    333,
+    "N/A",
+    "scikit-learn"
+   ],
+   [
+    372,
+    "N/A",
+    "Deep Learning Models"
+   ],
+   [
+    374,
+    "N/A",
+    "Deep Learning Models"
+   ],
+   [
+    405,
+    "N/A",
+    "Python"
+   ],
+   [
+    406,
+    "N/A",
+    "Python"
+   ],
+   [
+    408,
+    "N/A",
+    "Python"
+   ],
+   [
+    409,
+    "N/A",
+    "Python"
+   ],
+   [
+    411,
+    "N/A",
+    "Github.com/mycustomlibrary"
+   ],
+   [
+    412,
+    "N/A",
+    "Python"
+   ],
+   [
+    448,
+    "Moviewatchers Survey Dataset",
+    "N/A"
+   ],
+   [
+    510,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    511,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    520,
+    "N/A",
+    "bidirectional long short-term memory (biLSTM)"
+   ],
+   [
+    521,
+    "convolutional neural network",
+    "N/A"
+   ],
+   [
+    535,
+    "vits",
+    "XPhoneBERT"
+   ],
+   [
+    536,
+    "vits",
+    "XPhoneBERT"
+   ],
+   [
+    538,
+    "binarized statistical image feature (bsif) descriptor",
+    "binary statistical image feature (bsif) descriptor"
+   ],
+   [
+    552,
+    "XPhoneBERT",
+    "XPB"
+   ],
+   [
+    555,
+    "tts training",
+    "N/A"
+   ],
+   [
+    578,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    579,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    580,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    581,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    582,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    583,
+    "SAM-HQ",
+    "N/A"
+   ],
+   [
+    596,
+    "biLSTM",
+    "bidirectional long short-term memory"
+   ],
+   [
+    597,
+    "N/A",
+    "bidirectional long short-term memory (biLSTM)"
+   ],
+   [
+    598,
+    "N/A",
+    "bidirectional long-sufficiency memory"
+   ],
+   [
+    599,
+    "N/A",
+    "bidirectional long short-term memory (biLSTM)"
+   ],
+   [
+    600,
+    "convolutional neural network",
+    "N/A"
+   ],
+   [
+    601,
+    "convolutional neural network",
+    "N/A"
+   ],
+   [
+    611,
+    "vits",
+    "N/A"
+   ],
+   [
+    614,
+    "vits",
+    "N/A"
+   ],
+   [
+    617,
+    "binarized statistical image feature (bsif) descriptor",
+    "binary statistical image feature (bsif) descriptor"
+   ],
+   [
+    618,
+    "binarized statistical image feature (bsif) descriptor",
+    "binary statistical image feature (bsif) descriptor"
+   ],
+   [
+    619,
+    "binarized statistical image feature (bsif) descriptor",
+    "binary statistical image feature (bsif) descriptor"
+   ],
+   [
+    635,
+    "XPhoneBERT",
+    "XPB"
+   ],
+   [
+    636,
+    "XPhoneBERT",
+    "XPB"
+   ]
+  ]
+ },
+ "Version": {
+  "precision": 0.9869848156182213,
+  "recall": 0.9848484848484849,
+  "f1": 0.9859154929577465,
+  "exact_match": 0.9125,
+  "lenient_match": 0.9171875,
+  "errors": [
+   [
+    22,
+    0,
+    1
+   ],
+   [
+    55,
+    1,
+    0
+   ],
+   [
+    166,
+    0,
+    1
+   ],
+   [
+    194,
+    0,
+    1
+   ],
+   [
+    195,
+    0,
+    1
+   ],
+   [
+    196,
+    0,
+    1
+   ],
+   [
+    287,
+    1,
+    0
+   ],
+   [
+    288,
+    1,
+    0
+   ],
+   [
+    289,
+    1,
+    0
+   ],
+   [
+    330,
+    0,
+    1
+   ],
+   [
+    532,
+    1,
+    0
+   ],
+   [
+    533,
+    1,
+    0
+   ],
+   [
+    534,
+    1,
+    0
+   ]
+  ],
+  "exact_match_errors": [
+   [
+    1,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    2,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    4,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    22,
+    "2.0",
+    "N/A"
+   ],
+   [
+    47,
+    "3.6.2 | 3.1.4",
+    "3.1.2 | 3.1.4"
+   ],
+   [
+    55,
+    "N/A",
+    "3.6.2 | 3.1.4"
+   ],
+   [
+    79,
+    "3.1.2 | 3.3.1",
+    "3.1.2 | 3.1.3"
+   ],
+   [
+    86,
+    "3.3.1",
+    "3.1.3"
+   ],
+   [
+    87,
+    "3.1.2 | 3.3.1",
+    "3.1.2 | 3.1.3"
+   ],
+   [
+    133,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    134,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    135,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    136,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    137,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    138,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    142,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    143,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    144,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    166,
+    "1.5",
+    "N/A"
+   ],
+   [
+    194,
+    "2.0",
+    "N/A"
+   ],
+   [
+    195,
+    "2.0",
+    "N/A"
+   ],
+   [
+    196,
+    "2.0",
+    "N/A"
+   ],
+   [
+    268,
+    "3.6.2 | 3.1.4",
+    "3.1.2 | 3.0.4"
+   ],
+   [
+    269,
+    "3.6.2 | 3.1.4",
+    "3.1.2 | 3.0.4"
+   ],
+   [
+    270,
+    "3.6.2 | 3.1.4",
+    "3.1.2 | 3.0.4"
+   ],
+   [
+    274,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    276,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    277,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    278,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    280,
+    "3.6.2",
+    "3.6"
+   ],
+   [
+    282,
+    "3.1.4",
+    "v6"
+   ],
+   [
+    283,
+    "3.1.4",
+    "6.2"
+   ],
+   [
+    287,
+    "N/A",
+    "3.1.2 | 3.0.4"
+   ],
+   [
+    288,
+    "N/A",
+    "3.1.2"
+   ],
+   [
+    289,
+    "N/A",
+    "3.6.2 | 3.1.4"
+   ],
+   [
+    290,
+    "3.1.4",
+    "2.0"
+   ],
+   [
+    292,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    293,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    294,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    330,
+    "0.24.2",
+    "N/A"
+   ],
+   [
+    345,
+    "3.1.2 | 3.3.1",
+    "3.1.2 | 3.1.3"
+   ],
+   [
+    346,
+    "3.1.2 | 3.3.1",
+    "3.1.2"
+   ],
+   [
+    352,
+    "3.3.1",
+    "3.2.1"
+   ],
+   [
+    356,
+    "3.3.1",
+    "3.1.2"
+   ],
+   [
+    357,
+    "3.3.1",
+    "3.1.2"
+   ],
+   [
+    359,
+    "3.3.1",
+    "3.1.2 | 3.3.1"
+   ],
+   [
+    360,
+    "3.1.2",
+    "2.0"
+   ],
+   [
+    361,
+    "3.1.2",
+    "2.0"
+   ],
+   [
+    362,
+    "3.1.2",
+    "2.0"
+   ],
+   [
+    363,
+    "3.3.1",
+    "3.1.2"
+   ],
+   [
+    364,
+    "3.3.1",
+    "3.1.2"
+   ],
+   [
+    365,
+    "3.3.1",
+    "3.1.2"
+   ],
+   [
+    366,
+    "3.1.2 | 3.3.1",
+    "3.1.2 | 3.1.3"
+   ],
+   [
+    532,
+    "N/A",
+    "2022"
+   ],
+   [
+    533,
+    "N/A",
+    "2022"
+   ],
+   [
+    534,
+    "N/A",
+    "2022"
+   ]
+  ],
+  "lenient_match_errors": [
+   [
+    1,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    2,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    4,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    22,
+    "2.0",
+    "N/A"
+   ],
+   [
+    47,
+    "3.6.2 | 3.1.4",
+    "3.1.2 | 3.1.4"
+   ],
+   [
+    55,
+    "N/A",
+    "3.6.2 | 3.1.4"
+   ],
+   [
+    79,
+    "3.1.2 | 3.3.1",
+    "3.1.2 | 3.1.3"
+   ],
+   [
+    86,
+    "3.3.1",
+    "3.1.3"
+   ],
+   [
+    87,
+    "3.1.2 | 3.3.1",
+    "3.1.2 | 3.1.3"
+   ],
+   [
+    133,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    134,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    135,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    136,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    137,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    138,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    142,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    143,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    144,
+    "1.3.1093",
+    "1.3.7"
+   ],
+   [
+    166,
+    "1.5",
+    "N/A"
+   ],
+   [
+    194,
+    "2.0",
+    "N/A"
+   ],
+   [
+    195,
+    "2.0",
+    "N/A"
+   ],
+   [
+    196,
+    "2.0",
+    "N/A"
+   ],
+   [
+    268,
+    "3.6.2 | 3.1.4",
+    "3.1.2 | 3.0.4"
+   ],
+   [
+    269,
+    "3.6.2 | 3.1.4",
+    "3.1.2 | 3.0.4"
+   ],
+   [
+    270,
+    "3.6.2 | 3.1.4",
+    "3.1.2 | 3.0.4"
+   ],
+   [
+    274,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    276,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    277,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    278,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    282,
+    "3.1.4",
+    "v6"
+   ],
+   [
+    283,
+    "3.1.4",
+    "6.2"
+   ],
+   [
+    287,
+    "N/A",
+    "3.1.2 | 3.0.4"
+   ],
+   [
+    288,
+    "N/A",
+    "3.1.2"
+   ],
+   [
+    289,
+    "N/A",
+    "3.6.2 | 3.1.4"
+   ],
+   [
+    290,
+    "3.1.4",
+    "2.0"
+   ],
+   [
+    292,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    293,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    294,
+    "3.6.2",
+    "3.7.2"
+   ],
+   [
+    330,
+    "0.24.2",
+    "N/A"
+   ],
+   [
+    345,
+    "3.1.2 | 3.3.1",
+    "3.1.2 | 3.1.3"
+   ],
+   [
+    352,
+    "3.3.1",
+    "3.2.1"
+   ],
+   [
+    356,
+    "3.3.1",
+    "3.1.2"
+   ],
+   [
+    357,
+    "3.3.1",
+    "3.1.2"
+   ],
+   [
+    360,
+    "3.1.2",
+    "2.0"
+   ],
+   [
+    361,
+    "3.1.2",
+    "2.0"
+   ],
+   [
+    362,
+    "3.1.2",
+    "2.0"
+   ],
+   [
+    363,
+    "3.3.1",
+    "3.1.2"
+   ],
+   [
+    364,
+    "3.3.1",
+    "3.1.2"
+   ],
+   [
+    365,
+    "3.3.1",
+    "3.1.2"
+   ],
+   [
+    366,
+    "3.1.2 | 3.3.1",
+    "3.1.2 | 3.1.3"
+   ],
+   [
+    532,
+    "N/A",
+    "2022"
+   ],
+   [
+    533,
+    "N/A",
+    "2022"
+   ],
+   [
+    534,
+    "N/A",
+    "2022"
+   ]
+  ]
+ },
+ "License": {
+  "precision": 0.9801488833746899,
+  "recall": 0.9360189573459715,
+  "f1": 0.9575757575757575,
+  "exact_match": 0.840625,
+  "lenient_match": 0.884375,
+  "errors": [
+   [
+    55,
+    1,
+    0
+   ],
+   [
+    72,
+    1,
+    0
+   ],
+   [
+    73,
+    1,
+    0
+   ],
+   [
+    102,
+    1,
+    0
+   ],
+   [
+    188,
+    1,
+    0
+   ],
+   [
+    200,
+    1,
+    0
+   ],
+   [
+    212,
+    1,
+    0
+   ],
+   [
+    213,
+    1,
+    0
+   ],
+   [
+    216,
+    1,
+    0
+   ],
+   [
+    217,
+    1,
+    0
+   ],
+   [
+    223,
+    1,
+    0
+   ],
+   [
+    224,
+    1,
+    0
+   ],
+   [
+    225,
+    1,
+    0
+   ],
+   [
+    268,
+    0,
+    1
+   ],
+   [
+    269,
+    0,
+    1
+   ],
+   [
+    270,
+    0,
+    1
+   ],
+   [
+    280,
+    0,
+    1
+   ],
+   [
+    283,
+    0,
+    1
+   ],
+   [
+    287,
+    1,
+    0
+   ],
+   [
+    288,
+    1,
+    0
+   ],
+   [
+    289,
+    1,
+    0
+   ],
+   [
+    294,
+    0,
+    1
+   ],
+   [
+    299,
+    1,
+    0
+   ],
+   [
+    333,
+    1,
+    0
+   ],
+   [
+    335,
+    1,
+    0
+   ],
+   [
+    345,
+    0,
+    1
+   ],
+   [
+    357,
+    0,
+    1
+   ],
+   [
+    406,
+    1,
+    0
+   ],
+   [
+    408,
+    1,
+    0
+   ],
+   [
+    412,
+    1,
+    0
+   ],
+   [
+    488,
+    1,
+    0
+   ],
+   [
+    489,
+    1,
+    0
+   ],
+   [
+    491,
+    1,
+    0
+   ],
+   [
+    493,
+    1,
+    0
+   ],
+   [
+    582,
+    1,
+    0
+   ]
+  ],
+  "exact_match_errors": [
+   [
+    53,
+    "MIT license",
+    "MIT"
+   ],
+   [
+    55,
+    "N/A",
+    "Apache 2.0 License"
+   ],
+   [
+    56,
+    "MIT license",
+    "MIT"
+   ],
+   [
+    72,
+    "N/A",
+    "MIT"
+   ],
+   [
+    73,
+    "N/A",
+    "MIT"
+   ],
+   [
+    79,
+    "Apache 2.0 | Apache 2.0",
+    "Apache 2.0 License | Apache 2.0 License"
+   ],
+   [
+    80,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    81,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    82,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    83,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    84,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    85,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    86,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    87,
+    "Apache 2.0 | Apache 2.0",
+    "Apache 2.0 License | Apache 2.0 License"
+   ],
+   [
+    102,
+    "N/A",
+    "open source"
+   ],
+   [
+    145,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    146,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    147,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NCSA 4-03)"
+   ],
+   [
+    148,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    149,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    150,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    151,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    152,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial\u2013ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    153,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    154,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 5.0)"
+   ],
+   [
+    155,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    156,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 5.0)"
+   ],
+   [
+    157,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    158,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 5.0 International (permalink) License"
+   ],
+   [
+    159,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 5.0)"
+   ],
+   [
+    160,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial\u2013ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    161,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 5.0)"
+   ],
+   [
+    162,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    163,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    164,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY)SA 5.0"
+   ],
+   [
+    166,
+    "GNU Lesser General Public License",
+    "GNU Lesser General Public License 1.5"
+   ],
+   [
+    188,
+    "N/A",
+    "freely owned"
+   ],
+   [
+    200,
+    "N/A",
+    "proprietary"
+   ],
+   [
+    212,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    213,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    216,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    217,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    223,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    224,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    225,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    268,
+    "Apache 2.0 License | MIT license",
+    "N/A | N/A"
+   ],
+   [
+    269,
+    "Apache 2.0 License | MIT license",
+    "N/A | N/A"
+   ],
+   [
+    270,
+    "Apache 2.0 License | MIT license",
+    "N/A | N/A"
+   ],
+   [
+    273,
+    "Apache 2.0 License | MIT license",
+    "Apache 2.0 License | MIT"
+   ],
+   [
+    280,
+    "Apache 2.0 License",
+    "N/A"
+   ],
+   [
+    282,
+    "MIT license",
+    "Apache 2.0 License"
+   ],
+   [
+    283,
+    "MIT license",
+    "N/A"
+   ],
+   [
+    287,
+    "N/A",
+    "Apache 2.0 License"
+   ],
+   [
+    288,
+    "N/A",
+    "Apache 2.0 License"
+   ],
+   [
+    289,
+    "N/A",
+    "Apache 2.0 License"
+   ],
+   [
+    290,
+    "MIT license",
+    "Apache 2.0 License"
+   ],
+   [
+    291,
+    "MIT license",
+    "Apache 2.0 License"
+   ],
+   [
+    294,
+    "Apache 2.0 License",
+    "N/A"
+   ],
+   [
+    299,
+    "N/A",
+    "Open Data Commons Attribution License (ODC-BY)"
+   ],
+   [
+    321,
+    "MIT",
+    "permissive license"
+   ],
+   [
+    332,
+    "MIT",
+    "MIT License"
+   ],
+   [
+    333,
+    "N/A",
+    "MIT"
+   ],
+   [
+    335,
+    "N/A",
+    "MIT"
+   ],
+   [
+    345,
+    "Apache 2.0 | Apache 2.0",
+    "N/A | N/A"
+   ],
+   [
+    346,
+    "Apache 2.0 | Apache 2.0",
+    "Apache Spark | Hadoop"
+   ],
+   [
+    347,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    348,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    349,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    350,
+    "Apache 2.0",
+    "Apache Spark"
+   ],
+   [
+    351,
+    "Apache 2.0",
+    "Apache Spark"
+   ],
+   [
+    352,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    353,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    354,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    355,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    356,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    357,
+    "Apache 2.0",
+    "N/A"
+   ],
+   [
+    358,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    359,
+    "Apache 2.0",
+    "Apache 2.0 License | Apache 2.0 License"
+   ],
+   [
+    360,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    361,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    362,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    363,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    364,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    365,
+    "Apache 2.0",
+    "Apache 2.0 License"
+   ],
+   [
+    366,
+    "Apache 2.0 | Apache 2.0",
+    "Apache 2.0 License | Apache 2.0 License"
+   ],
+   [
+    367,
+    "Apache 2.0 | Apache 2.0",
+    "Apache Spark | Hadoop"
+   ],
+   [
+    368,
+    "Apache 2.0 | Apache 2.0",
+    "Apache 2.0 License | Apache 2.0 License | Apache 2.0 License"
+   ],
+   [
+    384,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    385,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    386,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    387,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    389,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    391,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    392,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    406,
+    "N/A",
+    "open source"
+   ],
+   [
+    408,
+    "N/A",
+    "open source"
+   ],
+   [
+    412,
+    "N/A",
+    "proprietary"
+   ],
+   [
+    488,
+    "N/A",
+    "proprietary"
+   ],
+   [
+    489,
+    "N/A",
+    "proprietary"
+   ],
+   [
+    491,
+    "N/A",
+    "proprietary"
+   ],
+   [
+    493,
+    "N/A",
+    "proprietary"
+   ],
+   [
+    582,
+    "N/A",
+    "publicly available"
+   ]
+  ],
+  "lenient_match_errors": [
+   [
+    55,
+    "N/A",
+    "Apache 2.0 License"
+   ],
+   [
+    72,
+    "N/A",
+    "MIT"
+   ],
+   [
+    73,
+    "N/A",
+    "MIT"
+   ],
+   [
+    79,
+    "Apache 2.0 | Apache 2.0",
+    "Apache 2.0 License | Apache 2.0 License"
+   ],
+   [
+    87,
+    "Apache 2.0 | Apache 2.0",
+    "Apache 2.0 License | Apache 2.0 License"
+   ],
+   [
+    102,
+    "N/A",
+    "open source"
+   ],
+   [
+    145,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    146,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    147,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NCSA 4-03)"
+   ],
+   [
+    148,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    149,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    150,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    151,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    152,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial\u2013ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    153,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    154,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 5.0)"
+   ],
+   [
+    155,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    156,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 5.0)"
+   ],
+   [
+    157,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    158,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 5.0 International (permalink) License"
+   ],
+   [
+    159,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 5.0)"
+   ],
+   [
+    160,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial\u2013ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    161,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 5.0)"
+   ],
+   [
+    162,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    163,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4)"
+   ],
+   [
+    164,
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY)SA 5.0"
+   ],
+   [
+    188,
+    "N/A",
+    "freely owned"
+   ],
+   [
+    200,
+    "N/A",
+    "proprietary"
+   ],
+   [
+    212,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    213,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    216,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    217,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    223,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    224,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    225,
+    "N/A",
+    "publicly available"
+   ],
+   [
+    268,
+    "Apache 2.0 License | MIT license",
+    "N/A | N/A"
+   ],
+   [
+    269,
+    "Apache 2.0 License | MIT license",
+    "N/A | N/A"
+   ],
+   [
+    270,
+    "Apache 2.0 License | MIT license",
+    "N/A | N/A"
+   ],
+   [
+    280,
+    "Apache 2.0 License",
+    "N/A"
+   ],
+   [
+    282,
+    "MIT license",
+    "Apache 2.0 License"
+   ],
+   [
+    283,
+    "MIT license",
+    "N/A"
+   ],
+   [
+    287,
+    "N/A",
+    "Apache 2.0 License"
+   ],
+   [
+    288,
+    "N/A",
+    "Apache 2.0 License"
+   ],
+   [
+    289,
+    "N/A",
+    "Apache 2.0 License"
+   ],
+   [
+    290,
+    "MIT license",
+    "Apache 2.0 License"
+   ],
+   [
+    291,
+    "MIT license",
+    "Apache 2.0 License"
+   ],
+   [
+    294,
+    "Apache 2.0 License",
+    "N/A"
+   ],
+   [
+    299,
+    "N/A",
+    "Open Data Commons Attribution License (ODC-BY)"
+   ],
+   [
+    321,
+    "MIT",
+    "permissive license"
+   ],
+   [
+    333,
+    "N/A",
+    "MIT"
+   ],
+   [
+    335,
+    "N/A",
+    "MIT"
+   ],
+   [
+    345,
+    "Apache 2.0 | Apache 2.0",
+    "N/A | N/A"
+   ],
+   [
+    346,
+    "Apache 2.0 | Apache 2.0",
+    "Apache Spark | Hadoop"
+   ],
+   [
+    350,
+    "Apache 2.0",
+    "Apache Spark"
+   ],
+   [
+    351,
+    "Apache 2.0",
+    "Apache Spark"
+   ],
+   [
+    357,
+    "Apache 2.0",
+    "N/A"
+   ],
+   [
+    366,
+    "Apache 2.0 | Apache 2.0",
+    "Apache 2.0 License | Apache 2.0 License"
+   ],
+   [
+    367,
+    "Apache 2.0 | Apache 2.0",
+    "Apache Spark | Hadoop"
+   ],
+   [
+    368,
+    "Apache 2.0 | Apache 2.0",
+    "Apache 2.0 License | Apache 2.0 License | Apache 2.0 License"
+   ],
+   [
+    384,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    385,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    386,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    387,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    389,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    391,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    392,
+    "publicly available",
+    "freely available"
+   ],
+   [
+    406,
+    "N/A",
+    "open source"
+   ],
+   [
+    408,
+    "N/A",
+    "open source"
+   ],
+   [
+    412,
+    "N/A",
+    "proprietary"
+   ],
+   [
+    488,
+    "N/A",
+    "proprietary"
+   ],
+   [
+    489,
+    "N/A",
+    "proprietary"
+   ],
+   [
+    491,
+    "N/A",
+    "proprietary"
+   ],
+   [
+    493,
+    "N/A",
+    "proprietary"
+   ],
+   [
+    582,
+    "N/A",
+    "publicly available"
+   ]
+  ]
+ },
+ "URL": {
+  "precision": 0.9872495446265938,
+  "recall": 0.9872495446265938,
+  "f1": 0.9872495446265938,
+  "exact_match": 0.925,
+  "lenient_match": 0.9328125,
+  "errors": [
+   [
+    316,
+    0,
+    1
+   ],
+   [
+    327,
+    0,
+    1
+   ],
+   [
+    329,
+    0,
+    1
+   ],
+   [
+    331,
+    0,
+    1
+   ],
+   [
+    333,
+    1,
+    0
+   ],
+   [
+    411,
+    0,
+    1
+   ],
+   [
+    458,
+    1,
+    0
+   ],
+   [
+    462,
+    1,
+    0
+   ],
+   [
+    463,
+    1,
+    0
+   ],
+   [
+    505,
+    1,
+    0
+   ],
+   [
+    570,
+    0,
+    1
+   ],
+   [
+    571,
+    1,
+    0
+   ],
+   [
+    575,
+    0,
+    1
+   ],
+   [
+    587,
+    1,
+    0
+   ]
+  ],
+  "exact_match_errors": [
+   [
+    55,
+    "N/A",
+    "N/A | N/A"
+   ],
+   [
+    131,
+    "https://github.com/segnetpp",
+    "https://github.com/segnen++"
+   ],
+   [
+    242,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    243,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    244,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    289,
+    "N/A",
+    "N/A | N/A"
+   ],
+   [
+    316,
+    "https://scikit-learn.org/",
+    "N/A"
+   ],
+   [
+    317,
+    "https://scikit-learn.org/",
+    "https://www.scientific.org/"
+   ],
+   [
+    318,
+    "https://scikit-learn.org/",
+    "https://scikit-learn.org"
+   ],
+   [
+    320,
+    "https://scikit-learn.org/",
+    "https://www.scientific.org/article"
+   ],
+   [
+    321,
+    "https://scikit-learn.org/",
+    "https://www.scientifexor.org/"
+   ],
+   [
+    324,
+    "https://scikit-learn.org/",
+    "https://www.scientifex.org/"
+   ],
+   [
+    327,
+    "https://scikit-learn.org/",
+    "N/A"
+   ],
+   [
+    328,
+    "https://scikit-learn.org/",
+    "https://scikit-lead.org/"
+   ],
+   [
+    329,
+    "https://scikit-learn.org/",
+    "N/A"
+   ],
+   [
+    331,
+    "https://scikit-learn.org/",
+    "N/A"
+   ],
+   [
+    332,
+    "https://scikit-learn.org/",
+    "https://www.scientifexworld.org/"
+   ],
+   [
+    333,
+    "N/A",
+    "https://scikit-learn.org/"
+   ],
+   [
+    336,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    337,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    338,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.ontario.com/ml"
+   ],
+   [
+    339,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    340,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    341,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.ci/ci"
+   ],
+   [
+    342,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    344,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.ci.edu/ml"
+   ],
+   [
+    386,
+    "https://nlp.stanford.edu/sentiment/index.html",
+    "https://nlp.stanford.edu/sentiment/index_fa.html"
+   ],
+   [
+    389,
+    "https://nlp.stanford.edu/sentiment/index.html",
+    "https://nlp.stanford.edu/sentiment/index_fr.html"
+   ],
+   [
+    392,
+    "https://nlp.stanford.edu/sentiment/index.html",
+    "https://nlp:sentiment/index.html"
+   ],
+   [
+    411,
+    "https://github.com/mycustomlibrary",
+    "N/A"
+   ],
+   [
+    458,
+    "N/A",
+    "https://caffe.berkeleyvision.org"
+   ],
+   [
+    462,
+    "N/A",
+    "https://caffe.berkeleyvision.org"
+   ],
+   [
+    463,
+    "N/A",
+    "https://caffe.berkeleyvision.org"
+   ],
+   [
+    466,
+    "https://caffe.berkeleyvision.org",
+    "https://caffe.berkeleyvision.org/index"
+   ],
+   [
+    505,
+    "N/A",
+    "https://github.com/SysCV/SAM-HQ"
+   ],
+   [
+    568,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://github.com/Sys team/project/procede"
+   ],
+   [
+    569,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://github.com/Sysv/SOSDHOC"
+   ],
+   [
+    570,
+    "https://github.com/SysCV/SAM-HQ",
+    "N/A"
+   ],
+   [
+    571,
+    "N/A",
+    "https://github.com/SysCV/"
+   ],
+   [
+    574,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://github.com/Sysv"
+   ],
+   [
+    575,
+    "https://github.com/SysCV/SAM-HQ",
+    "N/A"
+   ],
+   [
+    578,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://github.com/Sys"
+   ],
+   [
+    579,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://github.com/Sysadmiadmiration"
+   ],
+   [
+    580,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://github.com/Sync"
+   ],
+   [
+    581,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://github.com/Sysadmin"
+   ],
+   [
+    582,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://www.nsql.org"
+   ],
+   [
+    583,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://www.hq-sam.org"
+   ],
+   [
+    587,
+    "N/A",
+    "https://github.com/SysCV/SOAP-HQ"
+   ]
+  ],
+  "lenient_match_errors": [
+   [
+    131,
+    "https://github.com/segnetpp",
+    "https://github.com/segnen++"
+   ],
+   [
+    242,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    243,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    244,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    316,
+    "https://scikit-learn.org/",
+    "N/A"
+   ],
+   [
+    317,
+    "https://scikit-learn.org/",
+    "https://www.scientific.org/"
+   ],
+   [
+    320,
+    "https://scikit-learn.org/",
+    "https://www.scientific.org/article"
+   ],
+   [
+    321,
+    "https://scikit-learn.org/",
+    "https://www.scientifexor.org/"
+   ],
+   [
+    324,
+    "https://scikit-learn.org/",
+    "https://www.scientifex.org/"
+   ],
+   [
+    327,
+    "https://scikit-learn.org/",
+    "N/A"
+   ],
+   [
+    328,
+    "https://scikit-learn.org/",
+    "https://scikit-lead.org/"
+   ],
+   [
+    329,
+    "https://scikit-learn.org/",
+    "N/A"
+   ],
+   [
+    331,
+    "https://scikit-learn.org/",
+    "N/A"
+   ],
+   [
+    332,
+    "https://scikit-learn.org/",
+    "https://www.scientifexworld.org/"
+   ],
+   [
+    333,
+    "N/A",
+    "https://scikit-learn.org/"
+   ],
+   [
+    336,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    337,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    338,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.ontario.com/ml"
+   ],
+   [
+    339,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    340,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    341,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.ci/ci"
+   ],
+   [
+    342,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.edu/ml"
+   ],
+   [
+    344,
+    "https://archive.ics.uci.edu/ml",
+    "https://archive.uci.ci.edu/ml"
+   ],
+   [
+    386,
+    "https://nlp.stanford.edu/sentiment/index.html",
+    "https://nlp.stanford.edu/sentiment/index_fa.html"
+   ],
+   [
+    389,
+    "https://nlp.stanford.edu/sentiment/index.html",
+    "https://nlp.stanford.edu/sentiment/index_fr.html"
+   ],
+   [
+    392,
+    "https://nlp.stanford.edu/sentiment/index.html",
+    "https://nlp:sentiment/index.html"
+   ],
+   [
+    411,
+    "https://github.com/mycustomlibrary",
+    "N/A"
+   ],
+   [
+    458,
+    "N/A",
+    "https://caffe.berkeleyvision.org"
+   ],
+   [
+    462,
+    "N/A",
+    "https://caffe.berkeleyvision.org"
+   ],
+   [
+    463,
+    "N/A",
+    "https://caffe.berkeleyvision.org"
+   ],
+   [
+    505,
+    "N/A",
+    "https://github.com/SysCV/SAM-HQ"
+   ],
+   [
+    568,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://github.com/Sys team/project/procede"
+   ],
+   [
+    569,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://github.com/Sysv/SOSDHOC"
+   ],
+   [
+    570,
+    "https://github.com/SysCV/SAM-HQ",
+    "N/A"
+   ],
+   [
+    571,
+    "N/A",
+    "https://github.com/SysCV/"
+   ],
+   [
+    574,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://github.com/Sysv"
+   ],
+   [
+    575,
+    "https://github.com/SysCV/SAM-HQ",
+    "N/A"
+   ],
+   [
+    579,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://github.com/Sysadmiadmiration"
+   ],
+   [
+    580,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://github.com/Sync"
+   ],
+   [
+    581,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://github.com/Sysadmin"
+   ],
+   [
+    582,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://www.nsql.org"
+   ],
+   [
+    583,
+    "https://github.com/SysCV/SAM-HQ",
+    "https://www.hq-sam.org"
+   ],
+   [
+    587,
+    "N/A",
+    "https://github.com/SysCV/SOAP-HQ"
+   ]
+  ]
+ },
+ "Ownership": {
+  "precision": 0.9606299212598425,
+  "recall": 0.9070631970260223,
+  "f1": 0.9330783938814532,
+  "errors": [
+   [
+    22,
+    1,
+    0
+   ],
+   [
+    58,
+    1,
+    0
+   ],
+   [
+    131,
+    1,
+    0
+   ],
+   [
+    147,
+    1,
+    0
+   ],
+   [
+    194,
+    1,
+    0
+   ],
+   [
+    196,
+    1,
+    0
+   ],
+   [
+    287,
+    0,
+    1
+   ],
+   [
+    296,
+    1,
+    0
+   ],
+   [
+    298,
+    1,
+    0
+   ],
+   [
+    411,
+    1,
+    0
+   ],
+   [
+    443,
+    1,
+    0
+   ],
+   [
+    499,
+    0,
+    1
+   ],
+   [
+    512,
+    1,
+    0
+   ],
+   [
+    514,
+    0,
+    1
+   ],
+   [
+    515,
+    0,
+    1
+   ],
+   [
+    520,
+    1,
+    0
+   ],
+   [
+    523,
+    0,
+    1
+   ],
+   [
+    524,
+    1,
+    0
+   ],
+   [
+    535,
+    0,
+    1
+   ],
+   [
+    554,
+    0,
+    1
+   ],
+   [
+    567,
+    1,
+    0
+   ],
+   [
+    577,
+    0,
+    1
+   ],
+   [
+    584,
+    1,
+    0
+   ],
+   [
+    585,
+    1,
+    0
+   ],
+   [
+    586,
+    1,
+    0
+   ],
+   [
+    587,
+    1,
+    0
+   ],
+   [
+    588,
+    1,
+    0
+   ],
+   [
+    591,
+    0,
+    1
+   ],
+   [
+    598,
+    1,
+    0
+   ],
+   [
+    600,
+    0,
+    1
+   ],
+   [
+    606,
+    1,
+    0
+   ],
+   [
+    624,
+    1,
+    0
+   ],
+   [
+    637,
+    1,
+    0
+   ],
+   [
+    638,
+    1,
+    0
+   ],
+   [
+    639,
+    1,
+    0
+   ]
+  ]
+ },
+ "Usage": {
+  "precision": 0.9075268817204301,
+  "recall": 0.9504504504504504,
+  "f1": 0.9284928492849284,
+  "errors": [
+   [
+    0,
+    0,
+    1
+   ],
+   [
+    58,
+    0,
+    1
+   ],
+   [
+    59,
+    0,
+    1
+   ],
+   [
+    60,
+    0,
+    1
+   ],
+   [
+    78,
+    0,
+    1
+   ],
+   [
+    89,
+    1,
+    0
+   ],
+   [
+    93,
+    0,
+    1
+   ],
+   [
+    94,
+    0,
+    1
+   ],
+   [
+    95,
+    0,
+    1
+   ],
+   [
+    103,
+    0,
+    1
+   ],
+   [
+    105,
+    0,
+    1
+   ],
+   [
+    108,
+    0,
+    1
+   ],
+   [
+    130,
+    0,
+    1
+   ],
+   [
+    131,
+    0,
+    1
+   ],
+   [
+    295,
+    0,
+    1
+   ],
+   [
+    296,
+    0,
+    1
+   ],
+   [
+    297,
+    0,
+    1
+   ],
+   [
+    298,
+    0,
+    1
+   ],
+   [
+    299,
+    0,
+    1
+   ],
+   [
+    300,
+    0,
+    1
+   ],
+   [
+    340,
+    1,
+    0
+   ],
+   [
+    372,
+    1,
+    0
+   ],
+   [
+    373,
+    1,
+    0
+   ],
+   [
+    374,
+    1,
+    0
+   ],
+   [
+    375,
+    1,
+    0
+   ],
+   [
+    376,
+    1,
+    0
+   ],
+   [
+    377,
+    1,
+    0
+   ],
+   [
+    378,
+    1,
+    0
+   ],
+   [
+    379,
+    1,
+    0
+   ],
+   [
+    381,
+    1,
+    0
+   ],
+   [
+    382,
+    1,
+    0
+   ],
+   [
+    384,
+    0,
+    1
+   ],
+   [
+    385,
+    0,
+    1
+   ],
+   [
+    386,
+    0,
+    1
+   ],
+   [
+    387,
+    0,
+    1
+   ],
+   [
+    388,
+    0,
+    1
+   ],
+   [
+    389,
+    0,
+    1
+   ],
+   [
+    390,
+    0,
+    1
+   ],
+   [
+    391,
+    0,
+    1
+   ],
+   [
+    392,
+    0,
+    1
+   ],
+   [
+    413,
+    0,
+    1
+   ],
+   [
+    415,
+    0,
+    1
+   ],
+   [
+    419,
+    0,
+    1
+   ],
+   [
+    420,
+    0,
+    1
+   ],
+   [
+    422,
+    0,
+    1
+   ],
+   [
+    424,
+    0,
+    1
+   ],
+   [
+    426,
+    0,
+    1
+   ],
+   [
+    429,
+    0,
+    1
+   ],
+   [
+    430,
+    0,
+    1
+   ],
+   [
+    494,
+    0,
+    1
+   ],
+   [
+    495,
+    0,
+    1
+   ],
+   [
+    539,
+    0,
+    1
+   ],
+   [
+    540,
+    0,
+    1
+   ],
+   [
+    541,
+    1,
+    0
+   ],
+   [
+    542,
+    1,
+    0
+   ],
+   [
+    556,
+    0,
+    1
+   ],
+   [
+    558,
+    0,
+    1
+   ],
+   [
+    560,
+    1,
+    0
+   ],
+   [
+    562,
+    1,
+    0
+   ],
+   [
+    605,
+    1,
+    0
+   ],
+   [
+    606,
+    1,
+    0
+   ],
+   [
+    608,
+    1,
+    0
+   ],
+   [
+    609,
+    1,
+    0
+   ],
+   [
+    620,
+    1,
+    0
+   ],
+   [
+    623,
+    1,
+    0
+   ]
+  ]
+ }
+}

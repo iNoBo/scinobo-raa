@@ -1,0 +1,2500 @@
+{
+ "input_path": "examples/input/biomrc_paper.pdf",
+ "pdf_metadata": {
+  "identifiers": [
+   [
+    "MD5",
+    "30AADB2C0CFD18CBA5E1A2CC84B4858E"
+   ],
+   [
+    "arXiv",
+    "arXiv:2005.06376v1[cs.CL]"
+   ]
+  ],
+  "title": "BIOMRC: A Dataset for Biomedical Machine Reading Comprehension",
+  "abstract": [
+   [
+    "We introduce BIOMRC, a large-scale clozestyle biomedical MRC dataset.",
+    "Care was taken to reduce noise, compared to the previous BIOREAD dataset of Pappas et al. (2018).",
+    "Experiments show that simple heuristics do not perform well on the new dataset, and that two neural MRC models that had been tested on BIOREAD perform much better on BIOMRC, indicating that the new dataset is indeed less noisy or at least that its task is more feasible.",
+    "Non-expert human performance is also higher on the new dataset compared to BIOREAD, and biomedical experts perform even better.",
+    "We also introduce a new BERT-based MRC model, the best version of which substantially outperforms all other methods tested, reaching or surpassing the accuracy of biomedical experts in some experiments.",
+    "We make the new dataset available in three different sizes, also releasing our code, and providing a leaderboard."
+   ]
+  ],
+  "sections": [
+   [
+    null,
+    [
+     [
+      "We introduce BIOMRC, a large-scale clozestyle biomedical MRC dataset.",
+      "Care was taken to reduce noise, compared to the previous BIOREAD dataset of Pappas et al. (2018).",
+      "Experiments show that simple heuristics do not perform well on the new dataset, and that two neural MRC models that had been tested on BIOREAD perform much better on BIOMRC, indicating that the new dataset is indeed less noisy or at least that its task is more feasible.",
+      "Non-expert human performance is also higher on the new dataset compared to BIOREAD, and biomedical experts perform even better.",
+      "We also introduce a new BERT-based MRC model, the best version of which substantially outperforms all other methods tested, reaching or surpassing the accuracy of biomedical experts in some experiments.",
+      "We make the new dataset available in three different sizes, also releasing our code, and providing a leaderboard."
+     ]
+    ]
+   ],
+   [
+    "Introduction",
+    [
+     [
+      "Creating large corpora with human annotations is a demanding process in both time and resources.",
+      "Research teams often turn to distantly supervised or unsupervised methods to extract training examples from textual data.",
+      "In machine reading comprehension (MRC) (Hermann et al., 2015), a training instance can be automatically constructed by taking an unlabeled passage of multiple sentences, along with another smaller part of text, also unlabeled, usually the next sentence.",
+      "Then a named entity of the smaller text is replaced by a placeholder.",
+      "In this setting, MRC systems are trained (and evaluated for their ability) to read the passage and the smaller text, and guess the named entity that was replaced by the placeholder, which is typically one of the named entities of the passage.",
+      "This kind of question answering (QA) is also known as cloze-type questions (Taylor, 1953).",
+      "Several datasets have been created following this approach either using books (Hill et al., 2016;Bajgar et al., 2016) or news articles (Hermann et al., 2015).",
+      "Datasets of this kind are noisier than MRC datasets containing human-authored questions and manually annotated passage spans that answer them (Rajpurkar et al., 2016(Rajpurkar et al., , 2018;;Nguyen et al., 2016).",
+      "They require no human annotations, however, which is particularly important in biomedical question answering, where employing annotators with appropriate expertise is costly.",
+      "For example, the BIOASQ QA dataset (Tsatsaronis et al., 2015) currently contains approximately 3k questions, much fewer than the 100k questions of a SQUAD (Rajpurkar et al., 2016), exactly because it relies on expert annotators."
+     ],
+     [
+      "To bypass the need for expert annotators and produce a biomedical MRC dataset large enough to train (or pre-train) deep learning models, Pappas et al. (2018) adopted the cloze-style questions approach.",
+      "They used the full text of unlabeled biomedical articles from PUBMED CENTRAL, 1 and METAMAP (Aronson and Lang, 2010) to annotate the biomedical entities of the articles.",
+      "They extracted sequences of 21 sentences from the articles.",
+      "The first 20 sentences were used as a passage and the last sentence as a cloze-style question.",
+      "A biomedical entity of the 'question' was replaced by a placeholder, and systems have to guess which biomedical entity of the passage can best fill the placeholder.",
+      "This allowed Pappas et al. to produce a dataset, called BIOREAD, of approximately 16.4 million questions.",
+      "As the same authors reported, however, the mean accuracy of three humans on a sample of 30 questions from BIOREAD was only 68%.",
+      "Although this low score may be due to the fact that the three subjects were not biomedical experts, it is easy to see, by examining samples of BIOREAD, that many examples of the dataset do 1 https://www.ncbi.nlm.nih.gov/pmc/",
+      "'question' originating from caption: \"figure 4 htert @entity6 and @entity4 XXXX cell invasion.\""
+     ],
+     [
+      "'question' originating from reference : \"2004 , 17 , 250 257 .14967013",
+      "not make sense.",
+      "Many instances contain passages or questions crossing article sections, or originating from the references sections of articles, or they include captions and footnotes (Table 1).",
+      "Another source of noise is METAMAP, which often misses or mistakenly identifies biomedical entities (e.g., it often annotates 'to' as the country Togo)."
+     ],
+     [
+      "In this paper, we introduce BIOMRC, a new dataset for biomedical MRC that can be viewed as an improved version of BIOREAD.",
+      "To avoid crossing sections, extracting text from references, captions, tables etc., we use abstracts and titles of biomedical articles as passages and questions, respectively, which are clearly marked up in PUBMED data, instead of using the full text of the articles.",
+      "Using titles and abstracts is a decision that favors precision over recall.",
+      "Titles are likely to be related to their abstracts, which reduces the noise-tosignal ratio significantly and makes it less likely to generate irrelevant questions for a passage.",
+      "We replace a biomedical entity in each title with a placeholder, and we require systems to guess the hidden entity by considering the entities of the abstract as candidate answers.",
+      "Unlike BIOREAD, we use PUBTATOR (Wei et al., 2012), a repository that provides approximately 25 million abstracts and their corresponding titles from PUBMED, with multiple annotations. 2",
+      "We use DNORM's biomedical entity annotations, which are more accurate than METAMAP's (Leaman et al., 2013).",
+      "We also perform several checks, discussed below, to discard passage-question instances that are too easy, and we show that the accuracy of experts and nonexpert humans reaches 85% and 82%, respectively, on a sample of 30 instances for each annotator type, which is an indication that the new dataset is indeed less noisy, or at least that the task is more feasible for humans.",
+      "Following Pappas et al. (2018), we release two versions of BIOMRC, LARGE and LITE, containing 812k and 100k instances respectively, for researchers with more or fewer resources, along with the 60 instances (TINY) humans answered.",
+      "Random samples from BIOMRC LARGE where selected to create LITE and TINY.",
+      "BIOMRC TINY is used only as a test set; it has no training and validation subsets."
+     ],
+     [
+      "We tested on BIOMRC LITE the two deep learning MRC models that Pappas et al. (2018) had tested on BIOREAD LITE, namely Attention Sum Reader (AS-READER) (Kadlec et al., 2016) and Attention Over Attention Reader (AOA-READER) (Cui et al., 2017).",
+      "Experimental results show that AS-READER and AOA-READER perform better on BIOMRC, with the accuracy of AOA-READER reaching 70% compared to the corresponding 52% accuracy of Pappas et al. (2018), which is a further indication that the new dataset is less noisy or that at least its task is more feasible.",
+      "We also developed a new BERTbased (Devlin et al., 2019) MRC model, the best version of which (SCIBERT-MAX-READER) performs even better, with its accuracy reaching 80%.",
+      "We encourage further research on biomedical MRC by making our code and data publicly available, and by creating an on-line leaderboard for BIOMRC.3"
+     ]
+    ]
+   ],
+   [
+    "Dataset Construction",
+    [
+     [
+      "Using PUBTATOR, we gathered approx.",
+      "25 million abstracts and their titles.",
+      "We discarded articles with titles shorter than 15 characters or longer than 60 tokens, articles without abstracts, or with abstracts shorter than 100 characters, or fewer than 10 sentences.",
+      "We also removed articles with abstracts containing fewer than 5 entity annotations, or fewer than 2 or more than 20 distinct biomedical entity identifiers.",
+      "(PUBTATOR assigns the same identifier to all the synonyms of a biomedical entity; e.g., 'hemorrhagic stroke' and 'stroke' have the same identifier 'MESH:D020521'.)",
+      "We also discarded articles containing entities not linked to any of the ontologies used by PUBTATOR,4 or entities linked to multiple ontologies (entities with multiple ids), or entities whose spans overlapped with those of other entities.",
+      "We also removed articles with no entities in their titles, and articles with no entities shared by the title and abstract. 5",
+      "assage BACKGROUND: Most brain metastases arise from @entity0 .",
+      "Few studies compare the brain regions they involve, their numbers and intrinsic attributes.",
+      "METHODS: Records of all @entity1 referred to Radiation Oncology for treatment of symptomatic brain metastases were obtained.",
+      "Computed tomography (n = 56) or magnetic resonance imaging (n = 72) brain scans were reviewed.",
+      "RESULTS: Data from 68 breast and 62 @entity2 @entity1 were compared.",
+      "Brain metastases presented earlier in the course of the lung than of the @entity0 @entity1 (p = 0.001).",
+      "There were more metastases in the cerebral hemispheres of the breast than of the @entity2 @entity1 (p = 0.014).",
+      "More @entity0 @entity1 had cerebellar metastases (p = 0.001).",
+      "The number of cerebral hemisphere metastases and presence of cerebellar metastases were positively correlated (p = 0.001).",
+      "The prevalence of at least one @entity3 surrounded with > 2 cm of @entity4 was greater for the lung than for the breast @entity1 (p = 0.019).",
+      "The @entity5 type, rather than the scanning method, correlated with differences between these variables.",
+      "CONCLUSIONS: Brain metastases from lung occur earlier, are more @entity4 , but fewer in number than those from @entity0 .",
+      "Cerebellar brain metastases are more frequent in @entity0 ."
+     ]
+    ]
+   ],
+   [
+    "Candidates",
+    [
+     [
+      "@entity0 : ['breast and lung cancer'] ; @entity1 : ['patients'] ; @entity2 : ['lung cancer'] ; @entity3 : ['metastasis'] ; @entity4 : ['edematous', 'edema'] ; @entity5 : ['primary tumor'] Question Attributes of brain metastases from XXXX .",
+      "Answer @entity0 : ['breast and lung cancer']"
+     ],
+     [
+      "Figure 1: Example passage-question instance of BIOMRC.",
+      "The passage is the abstract of an article, with biomedical entities replaced by @entityN pseudo-identifiers.",
+      "The original entity names are shown in square brackets.",
+      "Both 'edematous' and 'edema' are replaced by '@entity4', because PUBTATOR considers them synonyms.",
+      "The question is the title of the article, with a biomedical entity replaced by XXXX.",
+      "@entity0 is the correct answer.",
+      "Finally, to avoid making the dataset too easy for a system that would always select the entity with the most occurrences in the abstract, we removed a passage-question instance if the most frequent entity of its passage (abstract) was also the answer to the cloze-style question (title with placeholder); if multiple entities had the same top frequency in the passage, the instance was retained.",
+      "We ended up with approx.",
+      "812k passage-question instances, which form BIOMRC LARGE, split into training, development, and test subsets (Table 2).",
+      "The LITE and TINY versions of BIOMRC are subsets of LARGE.",
+      "In all versions of BIOMRC (LARGE, LITE, TINY), the entity identifiers of PUBTATOR are replaced by pseudo-identifiers of the form @entityN (Fig. 1), as in the CNN and Daily Mail datasets (Hermann et al., 2015).",
+      "We provide all BIOMRC versions in two forms, corresponding to what Pappas et al.  (2018) call Settings A and B in BIOREAD. 6",
+      "In Setting A, each pseudo-identifier has a global scope, meaning that each biomedical entity has a unique 6 Pappas et al. (2018) actually call 'option a' and 'option b' our Setting B and A, respectively.",
+      "pseudo-identifier in the whole dataset.",
+      "This allows a system to learn information about the entity represented by a pseudo-identifier from all the occurrences of the pseudo-identifier in the training set.",
+      "For example after seeing the same pseudo-identifier multiple times a model may learn that it stands for a drug, or that a particular pseudo-identifier tends to neighbor with specific words.",
+      "Then, much like a language model, a system may guess the pseudoidentifier that should fill in the placeholder even without the passage, or at least it may infer a prior probability for each candidate answer.",
+      "In contrast, Setting B uses a local scope, i.e., it restarts the numbering of the pseudo-identifiers (from @en-tity0) anew in each passage-question instance.",
+      "This forces the models to rely only on information about the entities that can be inferred from the particular passage and question.",
+      "This corresponds to a nonexpert answering the question, who does not have any prior knowledge of the biomedical entities."
+     ],
+     [
+      "Table 2 provides statistics on BIOMRC.",
+      "In TINY, we use 30 different passage-question instances in Settings A and B, because in both settings we asked the same humans to answer the questions, and we Each sentence of the passage is concatenated with the question and fed to SCIBERT.",
+      "The top-level embedding produced by SCIBERT for the first sub-token of each candidate answer is concatenated with the toplevel embedding of [MASK] (which replaces the placeholder XXXX) of the question, and they are fed to an MLP, which produces the score of the candidate answer.",
+      "In SCIBERT-SUM-READER, the scores of multiple occurrences of the same candidate are summed, whereas SCIBERT-MAX-READER takes their maximum."
+     ],
+     [
+      "did not want them to remember instances from one setting to the other.",
+      "In LARGE and LITE, the instances are the same across the two settings, apart from the numbering of the entity identifiers."
+     ]
+    ]
+   ],
+   [
+    "Experiments and Results",
+    [
+     [
+      "We experimented only on BIOMRC LITE and TINY, since we did not have the computational resources to train the neural models we considered on the LARGE version of BIOREAD.",
+      "Pappas et al. (2018) also reported experimental results only on a LITE version of their BIOREAD dataset.",
+      "We hope that others may be able to experiment on BIOMRC LARGE, and we make our code available, as already noted."
+     ]
+    ]
+   ],
+   [
+    "Methods",
+    [
+     [
+      "We experimented with the four basic baselines (BASE1-4) that Pappas et al. (2018) used in BIOREAD, the two neural MRC models used by the same authors, AS-READER (Kadlec et al., 2016) and AOA-READER (Cui et al., 2017), and a BERTbased (Devlin et al., 2019) model we developed."
+     ],
+     [
+      "Basic baselines: BASE1, 2, 3 return the first, last, and the entity that occurs most frequently in the passage (or randomly one of the entities with the same highest frequency, if multiple exist), respectively.",
+      "Since in BIOREAD the correct answer is never (by construction) the most frequent entity of the passage, unless there are multiple entities with the same highest frequency, BASE3 performs poorly.",
+      "Hence, we also include a variant, BASE3+, which randomly selects one of the entities of the passage with the same highest frequency, if multiple exist, otherwise it selects the entity with the second highest frequency.",
+      "BASE4 extracts all the token n-grams from the passage that include an entity identifier (@entityN ), and all the n-grams from the question that include the placeholder (XXXX). 7",
+      " Then for each candidate answer (entity identifier), it counts the tokens shared between the n-grams that include the candidate and the n-grams that include the placeholder.",
+      "The candidate with the most shared tokens is selected.",
+      "These baselines are used to check that the questions cannot be answered by simplistic heuristics (Chen et al., 2016)."
+     ],
+     [
+      "Neural baselines: We use the same implementations of AS-READER (Kadlec et al., 2016) and AOA-READER (Cui et al., 2017) as Pappas et al. (2018), who also provide short descriptions of these neural models, not provided here to save space.",
+      "The hyper-parameters of both methods were tuned on the development set of BIOMRC LITE."
+     ],
+     [
+      "BERT-based model: We use SCIBERT (Beltagy et al., 2019), a pre-trained BERT (Devlin et al., 2019) model for scientific text.",
+      "SCIBERT is pretrained on 1.14 million articles from Semantic Scholar, 8 of which 82% (935k) are biomedical and the rest come from computer science.",
+      "For each passage-question instance, we split the passage into sentences using NLTK (Bird et al., 2009).",
+      "For each sentence, we concatenate it (using BERT's [SEP] token) with the question, after replacing the XXXX with BERT's [MASK] token, and we feed the concatenation to SCIBERT (Fig. 2).",
+      "We collect SCIBERT's top-level vector representations of the entity identifiers (@entityN ) of the sentence and [MASK]. 9",
+      "For each entity of the sentence, we concatenate its top-level representation with that of [MASK], and we feed them to a Multi-Layer Perceptron (MLP) to obtain a score for the particular entity (candidate answer).",
+      "We thus obtain a score for all the entities of the passage.",
+      "If an entity occurs multiple times in the passage, we take the sum or the maximum of the scores of its occurrences.",
+      "In both cases, a softmax is then applied to the scores of all the entities, and the entity with the maximum score is selected as the answer.",
+      "We call 7 We tried n = 2, . . .",
+      ", 6 and use n = 3, which gave the best accuracy on the development set of BIOMRC LARGE."
+     ],
+     [
+      "8 https://www.semanticscholar.org/ 9 BERT's tokenizer splits the entity identifiers into subtokens (Devlin et al., 2019).",
+      "We use the first one.",
+      "The top-level token representations of BERT are context-aware, and it is common to use the first or last sub-token of each named-entity.",
+      "In the lower zone (neural methods), the difference from each accuracy score to the next best is statistically significant (p < 0.02).",
+      "We used singe-tailed Approximate Randomization (Dror et al., 2018), randomly swapping the answers to 50% of the questions for 10k iterations."
+     ],
+     [
+      "this model SCIBERT-SUM-READER or SCIBERT-MAX-READER, depending on how it aggregates the scores of multiple occurrences of the same entity.",
+      "SCIBERT-SUM-READER is closer to AS-READER and AOA-READER, which also sum the scores of multiple occurrences of the same entity.",
+      "This summing aggregation, however, favors entities with several occurrences in the passage, even if the scores of all the occurrences are low.",
+      "Our experiments indicate that SCIBERT-MAX-READER performs better.",
+      "In all cases, we only update the parameters of the MLP during training, keeping the parameters of SCIBERT frozen to their pre-trained values to speed up training.",
+      "With more computing resources, it may be possible to improve the scores of SCIBERT-MAX-READER (and SCIBERT-SUM-READER) further by fine-tuning SCIBERT on BIOMRC training data."
+     ]
+    ]
+   ],
+   [
+    "Results on BIOMRC LITE",
+    [
+     [
+      "Table 3 reports the accuracy of all methods on BIOMRC LITE for Settings A and B. In both settings, all the neural models clearly outperform all the basic baselines, with BASE3 (most frequent entity of the passage) performing worst and BASE3+ performing much better, as expected.",
+      "In both settings, SCIBERT-MAX-READER clearly outperforms all the other methods on both the development and test sets.",
+      "The performance of SCIBERT-SUM-READER is approximately ten percentage points worse than SCIBERT-MAX-READER's on the development and test sets of both settings, indicating that the superior results of SCIBERT-MAX-READER are to a large extent due to the different aggregation function (max instead of sum) it uses to combine the scores of multiple occurrences of a candidate answer, not to the extensive pre-training of SCIBERT.",
+      "AOA-READER, which does not employ any pre-training, is competitive to SCIBERT-SUM-READER in Setting A, and performs better than SCIBERT-SUM-READER in Setting B, which again casts doubts on the value of SCIBERT's extensive pre-training.",
+      "We expect, however, that the performance of the SCIBERT-based models, could be improved further by fine-tuning SCIBERT's parameters."
+     ],
+     [
+      "The performance of SCIBERT-SUM-READER is slightly better in Setting A than in Setting B, which might suggest that the model manages to capture global properties of the entity pseudo-identifiers from the entire training set.",
+      "However, the performance of SCIBERT-MAX-READER is almost the same across the two settings, which contradicts the previous hypothesis.",
+      "Furthermore, the development and test performance of AS-READER and AOA-READER is higher in Setting B than A, indicating that these two models do not capture global properties of entities well, performing better when forced to consider only the information of the particular passage-question instance.",
+      "Overall, we see no strong evidence that the models we considered are able to learn global properties of the entities."
+     ],
+     [
+      "In both Settings A and B, AOA-READER performs better than AS-READER, which was expected since it uses a more elaborate attention mechanism, at the expense of taking longer to train (Table 3). 10",
+      "he two SCIBERT-based models are also competitive in terms of training time, because we only train the MLP (154k parameters) on top of SCIB-ERT, keeping the parameters of SCIBERT frozen."
+     ],
+     [
+      "The trainable parameters of AS-READER and AOA-READER are almost double in Setting A compared to Setting B. To some extent, this difference is due to the fact that for both models we learn a word embedding for each @entityN pseudoidentifier, and in Setting A the numbering of the identifiers is not reset for each passage-question instance, leading to many more pseudo-identifiers (31.77k pseudo-identifiers in the vocabulary of Setting A vs. only 20 in Setting B); this accounts for a difference of 1.59M parameters. 11",
+      "The rest of the difference in total parameters (from Setting A to B) is due to the fact that we tuned the hyperparameters of each model separately for each setting (A, B), on the corresponding development set.",
+      "Hyper-parameter tuning was performed separately for each model in each setting, but led to the same numbers of trainable parameters for AS-READER and AOA-READER, because the trainable parameters are dominated by the parameters of the word embeddings.",
+      "Note that the hyper-parameters of the two SCIBERT-based models (of their MLPs) were very minimally tuned, hence these models may perform even better with more extensive tuning.",
+      "AOA-READER was also better than AS-READER in the experiments of Pappas et al. (2018) on a LITE version of their BIOREAD dataset, but the development and test accuracy of AOA-READER in Setting A of BIOREAD was reported to be only 52.",
+      "41% and 51.19%,respectively (cf. Table 3); in Setting B, it was 50.44% and 49.94%, respectively.",
+      "The much higher scores of AOA-READER (and AS-READER) on BIOMRC LITE are an indication that the new dataset is less noisy, or that the task is at least more feasible for machines.",
+      "The results of Pappas et al. (2018) were slightly higher in Setting A than in Setting B, suggesting that AOA-READER was able to benefit from the global scope of entity identifiers, unlike our findings in BIOMRC. 12",
+      "igure 3 shows how many passage-question instances of the development subset of BIOMRC LITE have 2, 3, . . .",
+      ", 20 candidate answers (top left), and the corresponding accuracy of the basic baselines (top right), and the neural models (bottom).",
+      "BASE3+ is the best basic baseline for 2 and 3 candidates, and for 2 candidates it is competitive to the neural models.",
+      "Overall, however, BASE4 is clearly the best basic baseline, but it is outperformed by all neural models in almost all cases, as in Table 3. SCIBERT-MAX-READER is again the best system in both settings, almost always outperforming the other systems.",
+      "AS-READER is the worst neural model in almost all cases.",
+      "AOA-READER is competitive to SCIBERT-SUM-READER in Setting A, and slightly better overall than SCIBERT-SUM-READER in Setting B, as can be seen in Table 3. Pappas et al. (2018) asked humans (non-experts) to answer 30 questions from BIOREAD in Setting A, and 30 other questions in Setting B. We mirrored their experiment by providing 30 questions (from"
+     ]
+    ]
+   ],
+   [
+    "Results on BIOMRC TINY",
+    []
+   ],
+   [
+    "Passage",
+    [
+     [
+      "The study enrolled 53 @entity1 (29 males, 24 females) with @entity1576 aged 15-88 years.",
+      "Most of them were 59 years of age and younger.",
+      "In 1/3 of the @entity1 the diseases started with symptoms of @entity1729, in 2/3 of them-with pulmonary affection.",
+      "@entity55 was diagnosed in 50 @entity1 (94.3%), acute @entity3617 -in 3 @entity1.",
+      "ECG changes were registered in about half of the examinees who had no cardiac complaints.",
+      "25 of them had alterations in the end part of the ventricular ECG complex; rhythm and conduction disturbances occurred rarely.",
+      "Mycoplasmosis @entity1 suffering from @entity741 ( @entity741 ) had stable ECG changes while in those free of @entity741 the changes were short.",
+      "@entity296 foci were absent.",
+      "@entity299 comparison in @entity1 with @entity1576 and in other @entity1729 has found that cardiovascular system suffers less in acute mycoplasmosis.",
+      "These data are useful in differential diagnosis of @entity296 .",
+      "Candidates @entity1 : ['patients'] ; @entity1576 : ['respiratory mycoplasmosis'] ; @entity1729 : ['acute respiratory infections', 'acute respiratory viral infection'] ; @entity55 : ['Pneumonia'] ; @entity3617 : ['bronchitis'] ; @entity741 : ['IHD', 'ischemic heart disease'] ; @entity296 : ['myocardial infections', 'Myocardial necrosis'] ; @entity299 : ['Cardiac damage'] .",
+      "Question Cardio-vascular system condition in XXXX .",
+      "Expert Human Answers annotator1: @entity1576; annotator2: @entity1576.",
+      "Non-expert Human Answers annotator1: @entity296; annotator2: @entity296; annotator3: @entity1576."
+     ],
+     [
+      "Systems' Answers AS-READER: @entity1729; AOA-READER: @entity296; SCIBERT-SUM-READER: @entity1576."
+     ],
+     [
+      "Figure 4: Example from BIOMRC TINY.",
+      "In Setting A, humans see both the pseudo-identifiers (@entityN ) and the original names of the biomedical entities (shown in square brackets).",
+      "Systems see only the pseudo-identifiers, but the pseudo-identifiers have global scope over all instances, which allows the systems, at least in principle, to learn entity properties from the entire training set.",
+      "In Setting B, humans no longer see the original names of the entities, and systems see only the pseudo-identifiers with local scope (numbering reset per passage-question instance)."
+     ],
+     [
+      "BIOMRC LITE) to three non-experts (graduate CS students) in Setting A, and 30 other questions in Setting B. We also showed the same questions of each setting to two biomedical experts.",
+      "As in the experiment of Pappas et al. (2018), in Setting A both the experts and non-experts were also provided with the original names of the biomedical entities (entity names before replacing them with @entityN pseudo-identifiers) to allow them to use prior knowledge; see the top three zones of Fig. 4 for an example.",
+      "By contrast, in Setting B the original names of the entities were hidden.",
+      "Table 4 reports the human and system accuracy scores on BIOMRC TINY.",
+      "Both experts and nonexperts perform better in Setting A, where they can use prior knowledge about the biomedical entities.",
+      "The gap between experts and non-experts is three points larger in Setting B than in Setting A, presumably because experts can better deduce properties of the entities from the local context.",
+      "Turning to the system scores, SCIBERT-MAX-READER is again the best system, but again much of its performance is due to the max-aggregation of the scores of multiple occurrences of entities.",
+      "With sum-aggregation, SCIBERT-SUM-READER obtains exactly the same scores as AOA-READER, which again performs better than AS-READER.",
+      "(AOA-READER and SCIBERT-SUM-READER make different mistakes, but their scores just happen to be identical because of the small size of TINY.)",
+      "Unlike our results on BIOMRC LITE, we now see all systems performing better in Setting A compared to Setting B, which suggests they do benefit from the global scope of entity identifiers.",
+      "Also, SCIBERT-MAX-READER performs better than both experts and non-experts in Setting A, and better than non-experts in Setting B. However, BIOMRC TINY contains only 30 instances in each setting, and hence the results of Table 4 are less reliable than those from BIOMRC LITE (Table 3)."
+     ],
+     [
+      "In the corresponding experiments of Pappas et al. (2018), which were conducted in Setting B only, the average accuracy of the (non-expert) humans was 68.01%, but the humans were also allowed not to answer (when clueless), and unanswered questions were excluded from accuracy.",
+      "On average, they did not answer 21.11% of the questions, hence their accuracy drops to 46.90% if unanswered questions are counted as errors.",
+      "In our experiment, the humans were also allowed not to answer (when clueless), but we counted unanswered questions as errors, which we believe better reflects human performance.",
+      "Non-experts answered all questions in Setting A, and did not answer 13.33% (4/30) of the questions on average in Setting B. The decrease in the questions non-experts did not answer (from 21.11% to 13.33%) in Setting B (the only one considered in BIOREAD) again suggests that the new dataset is less noisy, or at least that the task is more feasible for humans, even when the names of the entities are hidden.",
+      "Experts did not answer 2.5% (0.75/30) and 1.67% (0.5/30) of the questions on average in Settings A and B, respectively."
+     ],
+     [
+      "Inter-annotator agreement was also higher for experts than non-experts in our experiment, in both Settings A and B (Table 5).",
+      "In Setting B, the agreement of non-experts was particularly low (47.22%),",
+      "possibly because without entity names they had to rely more on the text of the passage and question, which they had trouble understanding.",
+      "By contrast, the agreement of experts was slightly higher in Setting B than Setting A, possibly because without prior knowledge about the entities, which may differ across experts, they had to rely to a larger extent on the particular text of the passage and question."
+     ]
+    ]
+   ],
+   [
+    "Related work",
+    [
+     [
+      "Several biomedical MRC datasets exist, but have orders of magnitude fewer questions than BIOMRC (Ben Abacha and Demner-Fushman, 2019) or are not suitable for a cloze-style MRC task (Pampari et al., 2018;Ben Abacha et al., 2019;Zhang et al., 2018).",
+      "The closest dataset to ours is CLICR ( \u0160uster and Daelemans, 2018), a biomedical MRC dataset with cloze-type questions created using full-text articles from BMJ case reports. 13",
+      "CLICR contains 100k passage-question instances, the same number as BIOMRC LITE, but much fewer than the 812.7k instances of BIOMRC LARGE.",
+      "\u0160uster et al. used CLAMP (Soysal et al., 2017) to detect biomedical entities and link them to concepts of the UMLS Metathesaurus (Lindberg et al., 1993).",
+      "Cloze-style questions were created from the 'learning points' (summaries of important information) of the reports, by replacing biomedical entities with placeholders.",
+      "\u0160uster et al. experimented with the Stanford Reader (Chen et al., 2017) and the Gated-Attention Reader (Dhingra et al., 2017), which perform worse than AOA-READER (Cui et al., 2017)."
+     ],
+     [
+      "The QA dataset of BIOASQ (Tsatsaronis et al., 2015) contains questions written by biomedical experts.",
+      "The gold answers comprise multiple relevant documents per question, relevant snippets from the documents, exact answers in the form of entities, as well as reference summaries, written by the ex- perts.",
+      "Creating data of this kind, however, requires significant expertise and time.",
+      "In the eight years of BIOASQ, only 3,243 questions and gold answers have been created.",
+      "It would be particularly interesting to explore if larger automatically generated datasets like BIOMRC and CLICR could be used to pre-train models, which could then be fine-tuned for human-generated QA or MRC datasets."
+     ],
+     [
+      "Outside the biomedical domain, several clozestyle open-domain MRC datasets have been created automatically (Hill et al., 2016;Hermann et al., 2015;Dunn et al., 2017;Bajgar et al., 2016), but have been criticized of containing questions that can be answered by simple heuristics like our basic baselines (Chen et al., 2016).",
+      "There are also several large open-domain MRC datasets annotated by humans (Kwiatkowski et al., 2019;Rajpurkar et al., 2016Rajpurkar et al., , 2018;;Trischler et al., 2017;Nguyen et al., 2016;Lai et al., 2017).",
+      "To our knowledge the biggest human annotated corpus is Google's Natural Questions dataset (Kwiatkowski et al., 2019), with approximately 300k human annotated examples.",
+      "Datasets of this kind require extensive annotation effort, which for open-domain datasets is usually crowd-sourced.",
+      "Crowd-sourcing, however, is much more difficult for biomedical datasets, because of the required expertise of the annotators."
+     ]
+    ]
+   ],
+   [
+    "Conclusions and Future Work",
+    [
+     [
+      "We introduced BIOMRC, a large-scale cloze-style biomedical MRC dataset.",
+      "Care was taken to reduce noise, compared to the previous BIOREAD dataset of Pappas et al. (2018).",
+      "Experiments showed that BIOMRC's questions cannot be answered well by simple heuristics, and that two neural MRC models that had been tested on BIOREAD perform much better on BIOMRC, indicating that the new dataset is indeed less noisy or at least that its task is more feasible.",
+      "Human performance was also higher on a sample of BIOMRC compared to BIOREAD, and biomedical experts performed even better.",
+      "We also developed a new BERT-based model, the best version of which outperformed all other meth-ods tested, reaching or surpassing the accuracy of biomedical experts in some experiments.",
+      "We make BIOMRC available in three different sizes, also releasing our code, and providing a leaderboard."
+     ],
+     [
+      "We plan to tune more extensively the BERTbased model to further improve its efficiency, and to investigate if some of its techniques (mostly its max-aggregation, but also using sub-tokens) can also benefit the other neural models we considered.",
+      "We also plan to experiment with other MRC models that recently performed particularly well on opendomain MRC datasets (Zhang et al., 2020).",
+      "Finally, we aim to explore if pre-training neural models on BIOREAD is beneficial in human-generated biomedical datasets (Tsatsaronis et al., 2015)."
+     ]
+    ]
+   ],
+   [
+    "Figure 2 :",
+    [
+     [
+      "Figure 2: Illustration of our SCIBERT-based models.Each sentence of the passage is concatenated with the question and fed to SCIBERT.",
+      "The top-level embedding produced by SCIBERT for the first sub-token of each candidate answer is concatenated with the toplevel embedding of[MASK]  (which replaces the placeholder XXXX) of the question, and they are fed to an MLP, which produces the score of the candidate answer.",
+      "In SCIBERT-SUM-READER, the scores of multiple occurrences of the same candidate are summed, whereas SCIBERT-MAX-READER takes their maximum."
+     ]
+    ]
+   ],
+   [
+    "Figure 3 :",
+    [
+     [
+      "Figure 3: More detailed statistics and results on the development subset of BIOMRC LITE.",
+      "Number of passagequestion instances with 2, 3, . . .",
+      ", 20 candidate answers (top left).",
+      "Accuracy (%) of the basic baselines (top right).(%) of the neural models in Settings A (bottom left) and B (bottom right)."
+     ]
+    ]
+   ],
+   [
+    "",
+    [
+     [
+      "c samuni y. ; samuni u. ; goldstein s. the use of cyclic XXXX as hno scavengers .\"",
+      "'passage' containing captions: \"figure 2: distal UNK showing high insertion of rectum into common channel.",
+      "figure 3: illustration of the cloacal malformation.",
+      "figure 4: @entity5 showing UNK\""
+     ]
+    ]
+   ],
+   [
+    "Table 1 :",
+    [
+     [
+      "Examples of noisy BIOREAD data.",
+      "XXXX is the placeholder, and UNK is the 'unknown' token."
+     ]
+    ]
+   ],
+   [
+    "Table 4 :",
+    [
+     [
+      "Accuracy (%) on BIOMRC TINY.",
+      "Best human and system scores shown in bold."
+     ]
+    ]
+   ],
+   [
+    "Table 5 :",
+    [
+     [
+      "Human agreement (Cohen's Kappa, %) on BIOMRC TINY.",
+      "Avg.",
+      "pairwise scores for non-experts."
+     ]
+    ]
+   ],
+   [
+    "Acknowledgments",
+    [
+     []
+    ]
+   ],
+   [
+    "Acknowledgments",
+    [
+     []
+    ]
+   ],
+   [
+    null,
+    []
+   ]
+  ],
+  "bibl_references": [
+   {
+    "id": null,
+    "doi": null,
+    "title": "BIOMRC: A Dataset for Biomedical Machine Reading Comprehension",
+    "authors": [
+     {
+      "surname": "Stavropoulos",
+      "forename": "Petros"
+     },
+     {
+      "surname": "Pappas",
+      "forename": "Dimitris"
+     },
+     {
+      "surname": "Androutsopoulos",
+      "forename": "Ion"
+     },
+     {
+      "surname": "Mcdonald",
+      "forename": "Ryan"
+     }
+    ]
+   },
+   {
+    "id": "b0",
+    "doi": "10.1136/jamia.2009.002733",
+    "title": "An overview of MetaMap: historical perspective and recent advances",
+    "authors": [
+     {
+      "surname": "Aronson",
+      "forename": "Alan"
+     },
+     {
+      "surname": "Lang",
+      "forename": "Fran\u00e7ois-Michel"
+     }
+    ]
+   },
+   {
+    "id": "b1",
+    "doi": null,
+    "title": null,
+    "authors": null
+   },
+   {
+    "id": "b2",
+    "doi": "10.18653/v1/d19-1371",
+    "title": "SciBERT: A Pretrained Language Model for Scientific Text",
+    "authors": [
+     {
+      "surname": "Beltagy",
+      "forename": "Iz"
+     },
+     {
+      "surname": "Lo",
+      "forename": "Kyle"
+     },
+     {
+      "surname": "Cohan",
+      "forename": "Arman"
+     }
+    ]
+   },
+   {
+    "id": "b3",
+    "doi": null,
+    "title": "A question-entailment approach to question answering",
+    "authors": [
+     {
+      "surname": "Ben",
+      "forename": "Asma"
+     },
+     {
+      "surname": null,
+      "forename": "Abacha"
+     },
+     {
+      "surname": "Demner-Fushman",
+      "forename": "Dina"
+     }
+    ]
+   },
+   {
+    "id": "b4",
+    "doi": "10.18653/v1/w19-5039",
+    "title": "Overview of the MEDIQA 2019 Shared Task on Textual Inference, Question Entailment and Question Answering",
+    "authors": [
+     {
+      "surname": "Ben Abacha",
+      "forename": "Asma"
+     },
+     {
+      "surname": "Shivade",
+      "forename": "Chaitanya"
+     },
+     {
+      "surname": "Demner-Fushman",
+      "forename": "Dina"
+     }
+    ]
+   },
+   {
+    "id": "b5",
+    "doi": null,
+    "title": null,
+    "authors": null
+   },
+   {
+    "id": "b6",
+    "doi": "10.18653/v1/p16-1223",
+    "title": "A Thorough Examination of the CNN/Daily Mail Reading Comprehension Task",
+    "authors": [
+     {
+      "surname": "Chen",
+      "forename": "Danqi"
+     },
+     {
+      "surname": "Bolton",
+      "forename": "Jason"
+     },
+     {
+      "surname": "Manning",
+      "forename": "Christopher"
+     }
+    ]
+   },
+   {
+    "id": "b7",
+    "doi": "10.18653/v1/p17-1171",
+    "title": "Reading Wikipedia to Answer Open-Domain Questions",
+    "authors": [
+     {
+      "surname": "Chen",
+      "forename": "Danqi"
+     },
+     {
+      "surname": "Fisch",
+      "forename": "Adam"
+     },
+     {
+      "surname": "Weston",
+      "forename": "Jason"
+     },
+     {
+      "surname": "Bordes",
+      "forename": "Antoine"
+     }
+    ]
+   },
+   {
+    "id": "b8",
+    "doi": "10.18653/v1/p17-1055",
+    "title": "Attention-over-Attention Neural Networks for Reading Comprehension",
+    "authors": [
+     {
+      "surname": "Cui",
+      "forename": "Yiming"
+     },
+     {
+      "surname": "Chen",
+      "forename": "Zhipeng"
+     },
+     {
+      "surname": "Wei",
+      "forename": "Si"
+     },
+     {
+      "surname": "Wang",
+      "forename": "Shijin"
+     },
+     {
+      "surname": "Liu",
+      "forename": "Ting"
+     },
+     {
+      "surname": "Hu",
+      "forename": "Guoping"
+     }
+    ]
+   },
+   {
+    "id": "b9",
+    "doi": null,
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "authors": [
+     {
+      "surname": "Devlin",
+      "forename": "Jacob"
+     },
+     {
+      "surname": "Chang",
+      "forename": "Ming-Wei"
+     },
+     {
+      "surname": "Lee",
+      "forename": "Kenton"
+     },
+     {
+      "surname": "Toutanova",
+      "forename": "Kristina"
+     }
+    ]
+   },
+   {
+    "id": "b10",
+    "doi": "10.18653/v1/p17-1168",
+    "title": "Gated-Attention Readers for Text Comprehension",
+    "authors": [
+     {
+      "surname": "Dhingra",
+      "forename": "Bhuwan"
+     },
+     {
+      "surname": "Liu",
+      "forename": "Hanxiao"
+     },
+     {
+      "surname": "Yang",
+      "forename": "Zhilin"
+     },
+     {
+      "surname": "Cohen",
+      "forename": "William"
+     },
+     {
+      "surname": "Salakhutdinov",
+      "forename": "Ruslan"
+     }
+    ]
+   },
+   {
+    "id": "b11",
+    "doi": "10.18653/v1/p18-1128",
+    "title": "The Hitchhiker\u2019s Guide to Testing Statistical Significance in Natural Language Processing",
+    "authors": [
+     {
+      "surname": "Dror",
+      "forename": "Rotem"
+     },
+     {
+      "surname": "Baumer",
+      "forename": "Gili"
+     },
+     {
+      "surname": "Shlomov",
+      "forename": "Segev"
+     },
+     {
+      "surname": "Reichart",
+      "forename": "Roi"
+     }
+    ]
+   },
+   {
+    "id": "b12",
+    "doi": "10.1037/e650512012-001",
+    "title": null,
+    "authors": null
+   },
+   {
+    "id": "b13",
+    "doi": null,
+    "title": "Teaching Machines to Read and Comprehend",
+    "authors": [
+     {
+      "surname": "Moritz Hermann",
+      "forename": "Karl"
+     },
+     {
+      "surname": "Ko\u010disk\u00fd",
+      "forename": "Tom\u00e1\u0161"
+     },
+     {
+      "surname": "Grefenstette",
+      "forename": "Edward"
+     },
+     {
+      "surname": "Espeholt",
+      "forename": "Lasse"
+     },
+     {
+      "surname": "Kay",
+      "forename": "Will"
+     },
+     {
+      "surname": "Suleyman",
+      "forename": "Mustafa"
+     },
+     {
+      "surname": "Blunsom",
+      "forename": "Phil"
+     }
+    ]
+   },
+   {
+    "id": "b14",
+    "doi": null,
+    "title": null,
+    "authors": null
+   },
+   {
+    "id": "b15",
+    "doi": "10.18653/v1/p16-1086",
+    "title": "Text Understanding with the Attention Sum Reader Network",
+    "authors": [
+     {
+      "surname": "Kadlec",
+      "forename": "Rudolf"
+     },
+     {
+      "surname": "Schmid",
+      "forename": "Martin"
+     },
+     {
+      "surname": "Bajgar",
+      "forename": "Ond\u0159ej"
+     },
+     {
+      "surname": "Kleindienst",
+      "forename": "Jan"
+     }
+    ]
+   },
+   {
+    "id": "b16",
+    "doi": "10.1162/tacl_a_00276",
+    "title": "Natural Questions: A Benchmark for Question Answering Research",
+    "authors": [
+     {
+      "surname": "Kwiatkowski",
+      "forename": "Tom"
+     },
+     {
+      "surname": "Palomaki",
+      "forename": "Jennimaria"
+     },
+     {
+      "surname": "Redfield",
+      "forename": "Olivia"
+     },
+     {
+      "surname": "Collins",
+      "forename": "Michael"
+     },
+     {
+      "surname": "Parikh",
+      "forename": "Ankur"
+     },
+     {
+      "surname": "Alberti",
+      "forename": "Chris"
+     },
+     {
+      "surname": "Epstein",
+      "forename": "Danielle"
+     },
+     {
+      "surname": "Polosukhin",
+      "forename": "Illia"
+     },
+     {
+      "surname": "Devlin",
+      "forename": "Jacob"
+     },
+     {
+      "surname": "Lee",
+      "forename": "Kenton"
+     },
+     {
+      "surname": "Toutanova",
+      "forename": "Kristina"
+     },
+     {
+      "surname": "Jones",
+      "forename": "Llion"
+     },
+     {
+      "surname": "Kelcey",
+      "forename": "Matthew"
+     },
+     {
+      "surname": "Chang",
+      "forename": "Ming-Wei"
+     },
+     {
+      "surname": "Dai",
+      "forename": "Andrew"
+     },
+     {
+      "surname": "Uszkoreit",
+      "forename": "Jakob"
+     },
+     {
+      "surname": "Le",
+      "forename": "Quoc"
+     },
+     {
+      "surname": "Petrov",
+      "forename": "Slav"
+     }
+    ]
+   },
+   {
+    "id": "b17",
+    "doi": "10.18653/v1/d17-1082",
+    "title": "RACE: Large-scale ReAding Comprehension Dataset From Examinations",
+    "authors": [
+     {
+      "surname": "Lai",
+      "forename": "Guokun"
+     },
+     {
+      "surname": "Xie",
+      "forename": "Qizhe"
+     },
+     {
+      "surname": "Liu",
+      "forename": "Hanxiao"
+     },
+     {
+      "surname": "Yang",
+      "forename": "Yiming"
+     },
+     {
+      "surname": "Hovy",
+      "forename": "Eduard"
+     }
+    ]
+   },
+   {
+    "id": "b18",
+    "doi": "10.1093/bioinformatics/btt474",
+    "title": "DNorm: disease name normalization with pairwise learning to rank",
+    "authors": [
+     {
+      "surname": "Leaman",
+      "forename": "Robert"
+     },
+     {
+      "surname": "Islamaj Do\u011fan",
+      "forename": "Rezarta"
+     },
+     {
+      "surname": "Lu",
+      "forename": "Zhiyong"
+     }
+    ]
+   },
+   {
+    "id": "b19",
+    "doi": null,
+    "title": "The Unified Medical Language System",
+    "authors": [
+     {
+      "surname": "Donald",
+      "forename": "A"
+     },
+     {
+      "surname": "Lindberg",
+      "forename": "Betsy"
+     },
+     {
+      "surname": "Humphreys",
+      "forename": "Alexa"
+     },
+     {
+      "surname": "Mccray",
+      "forename": null
+     }
+    ]
+   },
+   {
+    "id": "b20",
+    "doi": "10.18653/v1/2020.coling-main.233",
+    "title": "A Vietnamese Dataset for Evaluating Machine Reading Comprehension",
+    "authors": [
+     {
+      "surname": "Nguyen",
+      "forename": "Kiet"
+     },
+     {
+      "surname": "Nguyen",
+      "forename": "Vu"
+     },
+     {
+      "surname": "Nguyen",
+      "forename": "Anh"
+     },
+     {
+      "surname": "Nguyen",
+      "forename": "Ngan"
+     }
+    ]
+   },
+   {
+    "id": "b21",
+    "doi": "10.18653/v1/d18-1258",
+    "title": "emrQA: A Large Corpus for Question Answering on Electronic Medical Records",
+    "authors": [
+     {
+      "surname": "Pampari",
+      "forename": "Anusri"
+     },
+     {
+      "surname": "Raghavan",
+      "forename": "Preethi"
+     },
+     {
+      "surname": "Liang",
+      "forename": "Jennifer"
+     },
+     {
+      "surname": "Peng",
+      "forename": "Jian"
+     }
+    ]
+   },
+   {
+    "id": "b22",
+    "doi": "10.18653/v1/2020.bionlp-1.15",
+    "title": "BioMRC: A Dataset for Biomedical Machine Reading Comprehension",
+    "authors": [
+     {
+      "surname": "Pappas",
+      "forename": "Dimitris"
+     },
+     {
+      "surname": "Stavropoulos",
+      "forename": "Petros"
+     },
+     {
+      "surname": "Androutsopoulos",
+      "forename": "Ion"
+     },
+     {
+      "surname": "Mcdonald",
+      "forename": "Ryan"
+     }
+    ]
+   },
+   {
+    "id": "b23",
+    "doi": "10.18653/v1/p18-2124",
+    "title": "Know What You Don\u2019t Know: Unanswerable Questions for SQuAD",
+    "authors": [
+     {
+      "surname": "Rajpurkar",
+      "forename": "Pranav"
+     },
+     {
+      "surname": "Jia",
+      "forename": "Robin"
+     },
+     {
+      "surname": "Liang",
+      "forename": "Percy"
+     }
+    ]
+   },
+   {
+    "id": "b24",
+    "doi": "10.18653/v1/d16-1264",
+    "title": "SQuAD: 100,000+ Questions for Machine Comprehension of Text",
+    "authors": [
+     {
+      "surname": "Rajpurkar",
+      "forename": "Pranav"
+     },
+     {
+      "surname": "Zhang",
+      "forename": "Jian"
+     },
+     {
+      "surname": "Lopyrev",
+      "forename": "Konstantin"
+     },
+     {
+      "surname": "Liang",
+      "forename": "Percy"
+     }
+    ]
+   },
+   {
+    "id": "b25",
+    "doi": "10.1093/jamia/ocx132",
+    "title": "CLAMP \u2013 a toolkit for efficiently building customized clinical natural language processing pipelines",
+    "authors": [
+     {
+      "surname": "Soysal",
+      "forename": "Ergin"
+     },
+     {
+      "surname": "Wang",
+      "forename": "Jingqi"
+     },
+     {
+      "surname": "Jiang",
+      "forename": "Min"
+     },
+     {
+      "surname": "Wu",
+      "forename": "Yonghui"
+     },
+     {
+      "surname": "Pakhomov",
+      "forename": "Serguei"
+     },
+     {
+      "surname": "Liu",
+      "forename": "Hongfang"
+     },
+     {
+      "surname": "Xu",
+      "forename": "Hua"
+     }
+    ]
+   },
+   {
+    "id": "b26",
+    "doi": "10.18653/v1/n18-1140",
+    "title": "CliCR: a Dataset of Clinical Case Reports for Machine Reading Comprehension",
+    "authors": [
+     {
+      "surname": "Suster",
+      "forename": "Simon"
+     },
+     {
+      "surname": "Daelemans",
+      "forename": "Walter"
+     }
+    ]
+   },
+   {
+    "id": "b27",
+    "doi": "10.1177/107769905303000401",
+    "title": "\u201cCloze Procedure\u201d: A New Tool for Measuring Readability",
+    "authors": [
+     {
+      "surname": "Taylor",
+      "forename": "Wilson"
+     }
+    ]
+   },
+   {
+    "id": "b28",
+    "doi": "10.18653/v1/w17-2623",
+    "title": "NewsQA: A Machine Comprehension Dataset",
+    "authors": [
+     {
+      "surname": "Trischler",
+      "forename": "Adam"
+     },
+     {
+      "surname": "Wang",
+      "forename": "Tong"
+     },
+     {
+      "surname": "Yuan",
+      "forename": "Xingdi"
+     },
+     {
+      "surname": "Harris",
+      "forename": "Justin"
+     },
+     {
+      "surname": "Sordoni",
+      "forename": "Alessandro"
+     },
+     {
+      "surname": "Bachman",
+      "forename": "Philip"
+     },
+     {
+      "surname": "Suleman",
+      "forename": "Kaheer"
+     }
+    ]
+   },
+   {
+    "id": "b29",
+    "doi": "10.1186/s12859-015-0564-6",
+    "title": "An overview of the BIOASQ large-scale biomedical semantic indexing and question answering competition",
+    "authors": [
+     {
+      "surname": "Tsatsaronis",
+      "forename": "George"
+     },
+     {
+      "surname": "Balikas",
+      "forename": "Georgios"
+     },
+     {
+      "surname": "Malakasiotis",
+      "forename": "Prodromos"
+     },
+     {
+      "surname": "Partalas",
+      "forename": "Ioannis"
+     },
+     {
+      "surname": "Zschunke",
+      "forename": "Matthias"
+     },
+     {
+      "surname": "Alvers",
+      "forename": "Michael"
+     },
+     {
+      "surname": "Weissenborn",
+      "forename": "Dirk"
+     },
+     {
+      "surname": "Krithara",
+      "forename": "Anastasia"
+     },
+     {
+      "surname": "Petridis",
+      "forename": "Sergios"
+     },
+     {
+      "surname": "Polychronopoulos",
+      "forename": "Dimitris"
+     },
+     {
+      "surname": "Almirantis",
+      "forename": "Yannis"
+     },
+     {
+      "surname": "Pavlopoulos",
+      "forename": "John"
+     },
+     {
+      "surname": "Baskiotis",
+      "forename": "Nicolas"
+     },
+     {
+      "surname": "Gallinari",
+      "forename": "Patrick"
+     },
+     {
+      "surname": "Arti\u00e9res",
+      "forename": "Thierry"
+     },
+     {
+      "surname": "Ngomo",
+      "forename": "Axel-Cyrille Ngonga"
+     },
+     {
+      "surname": "Heino",
+      "forename": "Norman"
+     },
+     {
+      "surname": "Gaussier",
+      "forename": "Eric"
+     },
+     {
+      "surname": "Barrio-Alvers",
+      "forename": "Liliana"
+     },
+     {
+      "surname": "Schroeder",
+      "forename": "Michael"
+     },
+     {
+      "surname": "Androutsopoulos",
+      "forename": "Ion"
+     },
+     {
+      "surname": "Paliouras",
+      "forename": "Georgios"
+     }
+    ]
+   },
+   {
+    "id": "b30",
+    "doi": "10.1093/database/bas041",
+    "title": "Accelerating literature curation with text-mining tools: a case study of using PubTator to curate genes in PubMed abstracts",
+    "authors": [
+     {
+      "surname": "Wei",
+      "forename": "C-H"
+     },
+     {
+      "surname": "Harris",
+      "forename": "Bethany"
+     },
+     {
+      "surname": "Li",
+      "forename": "Donghui"
+     },
+     {
+      "surname": "Berardini",
+      "forename": "Tanya"
+     },
+     {
+      "surname": "Huala",
+      "forename": "Eva"
+     },
+     {
+      "surname": "Kao",
+      "forename": "H-Y"
+     },
+     {
+      "surname": "Lu",
+      "forename": "Zhiyong"
+     }
+    ]
+   },
+   {
+    "id": "b31",
+    "doi": "10.1609/aaai.v32i1.11970",
+    "title": "Medical Exam Question Answering with Large-scale Reading Comprehension",
+    "authors": [
+     {
+      "surname": "Zhang",
+      "forename": "Xiao"
+     },
+     {
+      "surname": "Wu",
+      "forename": "Ji"
+     },
+     {
+      "surname": "He",
+      "forename": "Zhiyang"
+     },
+     {
+      "surname": "Liu",
+      "forename": "Xien"
+     },
+     {
+      "surname": "Su",
+      "forename": "Ying"
+     }
+    ]
+   },
+   {
+    "id": "b32",
+    "doi": "10.1177/003368828401500213",
+    "title": "Understanding Reading Compre hension",
+    "authors": [
+     {
+      "surname": "Zhang",
+      "forename": "Zhuosheng"
+     },
+     {
+      "surname": "Yang",
+      "forename": "Jun Jie"
+     },
+     {
+      "surname": "Zhao",
+      "forename": "Hai"
+     }
+    ]
+   }
+  ],
+  "figures": [
+   {
+    "id": "fig_0",
+    "head": "Figure 2 :",
+    "desc": "Figure 2: Illustration of our SCIBERT-based models.Each sentence of the passage is concatenated with the question and fed to SCIBERT.The top-level embedding produced by SCIBERT for the first sub-token of each candidate answer is concatenated with the toplevel embedding of[MASK]  (which replaces the placeholder XXXX) of the question, and they are fed to an MLP, which produces the score of the candidate answer.In SCIBERT-SUM-READER, the scores of multiple occurrences of the same candidate are summed, whereas SCIBERT-MAX-READER takes their maximum."
+   },
+   {
+    "id": "fig_1",
+    "head": "Figure 3 :",
+    "desc": "Figure 3: More detailed statistics and results on the development subset of BIOMRC LITE.Number of passagequestion instances with 2, 3, . . ., 20 candidate answers (top left).Accuracy (%) of the basic baselines (top right).(%) of the neural models in Settings A (bottom left) and B (bottom right)."
+   },
+   {
+    "id": "tab_0",
+    "head": "",
+    "desc": "c samuni y. ; samuni u. ; goldstein s. the use of cyclic XXXX as hno scavengers .\"'passage' containing captions: \"figure 2: distal UNK showing high insertion of rectum into common channel.figure 3: illustration of the cloacal malformation.figure 4: @entity5 showing UNK\""
+   },
+   {
+    "id": "tab_1",
+    "head": "Table 1 :",
+    "desc": "Examples of noisy BIOREAD data.XXXX is the placeholder, and UNK is the 'unknown' token."
+   },
+   {
+    "id": "tab_2",
+    "head": "Table 2 :",
+    "desc": ""
+   },
+   {
+    "id": "tab_4",
+    "head": "Table 4 :",
+    "desc": "Accuracy (%) on BIOMRC TINY.Best human and system scores shown in bold."
+   },
+   {
+    "id": "tab_5",
+    "head": "Table 5 :",
+    "desc": "Human agreement (Cohen's Kappa, %) on BIOMRC TINY.Avg.pairwise scores for non-experts."
+   }
+  ],
+  "formulas": [],
+  "citances": [
+   {
+    "sec_idx": 0,
+    "par_idx": 0,
+    "s_idx": 1,
+    "refs": [
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     }
+    ],
+    "sentence": "Care was taken to reduce noise, compared to the previous BIOREAD dataset of Pappas et al. (2018)."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 0,
+    "s_idx": 2,
+    "refs": [
+     {
+      "target": "#b13",
+      "type": "bibr",
+      "text": "(Hermann et al., 2015)"
+     }
+    ],
+    "sentence": "In machine reading comprehension (MRC) (Hermann et al., 2015), a training instance can be automatically constructed by taking an unlabeled passage of multiple sentences, along with another smaller part of text, also unlabeled, usually the next sentence."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 0,
+    "s_idx": 5,
+    "refs": [
+     {
+      "target": "#b27",
+      "type": "bibr",
+      "text": "(Taylor, 1953)"
+     }
+    ],
+    "sentence": "This kind of question answering (QA) is also known as cloze-type questions (Taylor, 1953)."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 0,
+    "s_idx": 6,
+    "refs": [
+     {
+      "target": "#b14",
+      "type": "bibr",
+      "text": "(Hill et al., 2016;"
+     },
+     {
+      "target": "#b1",
+      "type": "bibr",
+      "text": "Bajgar et al., 2016)"
+     },
+     {
+      "target": "#b13",
+      "type": "bibr",
+      "text": "(Hermann et al., 2015)"
+     }
+    ],
+    "sentence": "Several datasets have been created following this approach either using books (Hill et al., 2016;Bajgar et al., 2016) or news articles (Hermann et al., 2015)."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 0,
+    "s_idx": 7,
+    "refs": [
+     {
+      "target": "#b24",
+      "type": "bibr",
+      "text": "(Rajpurkar et al., 2016"
+     },
+     {
+      "target": "#b23",
+      "type": "bibr",
+      "text": "(Rajpurkar et al., , 2018;;"
+     },
+     {
+      "target": "#b20",
+      "type": "bibr",
+      "text": "Nguyen et al., 2016)"
+     }
+    ],
+    "sentence": "Datasets of this kind are noisier than MRC datasets containing human-authored questions and manually annotated passage spans that answer them (Rajpurkar et al., 2016(Rajpurkar et al., , 2018;;Nguyen et al., 2016)."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 0,
+    "s_idx": 9,
+    "refs": [
+     {
+      "target": "#b29",
+      "type": "bibr",
+      "text": "(Tsatsaronis et al., 2015)"
+     },
+     {
+      "target": "#b24",
+      "type": "bibr",
+      "text": "(Rajpurkar et al., 2016)"
+     }
+    ],
+    "sentence": "For example, the BIOASQ QA dataset (Tsatsaronis et al., 2015) currently contains approximately 3k questions, much fewer than the 100k questions of a SQUAD (Rajpurkar et al., 2016), exactly because it relies on expert annotators."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 1,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     }
+    ],
+    "sentence": "To bypass the need for expert annotators and produce a biomedical MRC dataset large enough to train (or pre-train) deep learning models, Pappas et al. (2018) adopted the cloze-style questions approach."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 1,
+    "s_idx": 1,
+    "refs": [
+     {
+      "target": "#b0",
+      "type": "bibr",
+      "text": "(Aronson and Lang, 2010)"
+     }
+    ],
+    "sentence": "They used the full text of unlabeled biomedical articles from PUBMED CENTRAL, 1 and METAMAP (Aronson and Lang, 2010) to annotate the biomedical entities of the articles."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 2,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": null,
+      "type": "bibr",
+      "text": ": \"2004 , 17 , 250 257 .14967013"
+     }
+    ],
+    "sentence": "'question' originating from reference : \"2004 , 17 , 250 257 .14967013"
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 2,
+    "s_idx": 2,
+    "refs": [
+     {
+      "target": "#tab_1",
+      "type": "table",
+      "text": "1"
+     }
+    ],
+    "sentence": "Many instances contain passages or questions crossing article sections, or originating from the references sections of articles, or they include captions and footnotes (Table 1)."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 3,
+    "s_idx": 5,
+    "refs": [
+     {
+      "target": "#b30",
+      "type": "bibr",
+      "text": "(Wei et al., 2012)"
+     },
+     {
+      "target": "#foot_0",
+      "type": "foot",
+      "text": "2"
+     }
+    ],
+    "sentence": "Unlike BIOREAD, we use PUBTATOR (Wei et al., 2012), a repository that provides approximately 25 million abstracts and their corresponding titles from PUBMED, with multiple annotations. 2"
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 3,
+    "s_idx": 6,
+    "refs": [
+     {
+      "target": "#b18",
+      "type": "bibr",
+      "text": "(Leaman et al., 2013)"
+     }
+    ],
+    "sentence": "We use DNORM's biomedical entity annotations, which are more accurate than METAMAP's (Leaman et al., 2013)."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 3,
+    "s_idx": 8,
+    "refs": [
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     }
+    ],
+    "sentence": "Following Pappas et al. (2018), we release two versions of BIOMRC, LARGE and LITE, containing 812k and 100k instances respectively, for researchers with more or fewer resources, along with the 60 instances (TINY) humans answered."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 4,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     },
+     {
+      "target": "#b15",
+      "type": "bibr",
+      "text": "(Kadlec et al., 2016)"
+     },
+     {
+      "target": "#b8",
+      "type": "bibr",
+      "text": "(Cui et al., 2017)"
+     }
+    ],
+    "sentence": "We tested on BIOMRC LITE the two deep learning MRC models that Pappas et al. (2018) had tested on BIOREAD LITE, namely Attention Sum Reader (AS-READER) (Kadlec et al., 2016) and Attention Over Attention Reader (AOA-READER) (Cui et al., 2017)."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 4,
+    "s_idx": 1,
+    "refs": [
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     }
+    ],
+    "sentence": "Experimental results show that AS-READER and AOA-READER perform better on BIOMRC, with the accuracy of AOA-READER reaching 70% compared to the corresponding 52% accuracy of Pappas et al. (2018), which is a further indication that the new dataset is less noisy or that at least its task is more feasible."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 4,
+    "s_idx": 2,
+    "refs": [
+     {
+      "target": "#b9",
+      "type": "bibr",
+      "text": "(Devlin et al., 2019)"
+     }
+    ],
+    "sentence": "We also developed a new BERTbased (Devlin et al., 2019) MRC model, the best version of which (SCIBERT-MAX-READER) performs even better, with its accuracy reaching 80%."
+   },
+   {
+    "sec_idx": 1,
+    "par_idx": 4,
+    "s_idx": 3,
+    "refs": [
+     {
+      "target": "#foot_1",
+      "type": "foot",
+      "text": "3"
+     }
+    ],
+    "sentence": "We encourage further research on biomedical MRC by making our code and data publicly available, and by creating an on-line leaderboard for BIOMRC.3"
+   },
+   {
+    "sec_idx": 2,
+    "par_idx": 0,
+    "s_idx": 5,
+    "refs": [
+     {
+      "target": "#foot_2",
+      "type": "foot",
+      "text": "4"
+     }
+    ],
+    "sentence": "We also discarded articles containing entities not linked to any of the ontologies used by PUBTATOR,4 or entities linked to multiple ontologies (entities with multiple ids), or entities whose spans overlapped with those of other entities."
+   },
+   {
+    "sec_idx": 2,
+    "par_idx": 0,
+    "s_idx": 6,
+    "refs": [
+     {
+      "target": "#foot_3",
+      "type": "foot",
+      "text": "5"
+     }
+    ],
+    "sentence": "We also removed articles with no entities in their titles, and articles with no entities shared by the title and abstract. 5"
+   },
+   {
+    "sec_idx": 3,
+    "par_idx": 1,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": null,
+      "type": "figure",
+      "text": "1"
+     }
+    ],
+    "sentence": "Figure 1: Example passage-question instance of BIOMRC."
+   },
+   {
+    "sec_idx": 3,
+    "par_idx": 1,
+    "s_idx": 8,
+    "refs": [
+     {
+      "target": "#tab_2",
+      "type": "table",
+      "text": "2"
+     }
+    ],
+    "sentence": "812k passage-question instances, which form BIOMRC LARGE, split into training, development, and test subsets (Table 2)."
+   },
+   {
+    "sec_idx": 3,
+    "par_idx": 1,
+    "s_idx": 10,
+    "refs": [
+     {
+      "target": null,
+      "type": "figure",
+      "text": "1"
+     },
+     {
+      "target": "#b13",
+      "type": "bibr",
+      "text": "(Hermann et al., 2015)"
+     }
+    ],
+    "sentence": "In all versions of BIOMRC (LARGE, LITE, TINY), the entity identifiers of PUBTATOR are replaced by pseudo-identifiers of the form @entityN (Fig. 1), as in the CNN and Daily Mail datasets (Hermann et al., 2015)."
+   },
+   {
+    "sec_idx": 3,
+    "par_idx": 2,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": "#tab_2",
+      "type": "table",
+      "text": "2"
+     }
+    ],
+    "sentence": "Table 2 provides statistics on BIOMRC."
+   },
+   {
+    "sec_idx": 3,
+    "par_idx": 2,
+    "s_idx": 2,
+    "refs": [
+     {
+      "target": null,
+      "type": "bibr",
+      "text": "[MASK]"
+     }
+    ],
+    "sentence": "The top-level embedding produced by SCIBERT for the first sub-token of each candidate answer is concatenated with the toplevel embedding of [MASK] (which replaces the placeholder XXXX) of the question, and they are fed to an MLP, which produces the score of the candidate answer."
+   },
+   {
+    "sec_idx": 4,
+    "par_idx": 0,
+    "s_idx": 1,
+    "refs": [
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     }
+    ],
+    "sentence": "Pappas et al. (2018) also reported experimental results only on a LITE version of their BIOREAD dataset."
+   },
+   {
+    "sec_idx": 5,
+    "par_idx": 0,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     },
+     {
+      "target": "#b15",
+      "type": "bibr",
+      "text": "(Kadlec et al., 2016)"
+     },
+     {
+      "target": "#b8",
+      "type": "bibr",
+      "text": "(Cui et al., 2017)"
+     },
+     {
+      "target": "#b9",
+      "type": "bibr",
+      "text": "(Devlin et al., 2019)"
+     }
+    ],
+    "sentence": "We experimented with the four basic baselines (BASE1-4) that Pappas et al. (2018) used in BIOREAD, the two neural MRC models used by the same authors, AS-READER (Kadlec et al., 2016) and AOA-READER (Cui et al., 2017), and a BERTbased (Devlin et al., 2019) model we developed."
+   },
+   {
+    "sec_idx": 5,
+    "par_idx": 1,
+    "s_idx": 6,
+    "refs": [
+     {
+      "target": null,
+      "type": "bibr",
+      "text": "(Chen et al., 2016)"
+     }
+    ],
+    "sentence": "These baselines are used to check that the questions cannot be answered by simplistic heuristics (Chen et al., 2016)."
+   },
+   {
+    "sec_idx": 5,
+    "par_idx": 2,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": "#b15",
+      "type": "bibr",
+      "text": "(Kadlec et al., 2016)"
+     },
+     {
+      "target": "#b8",
+      "type": "bibr",
+      "text": "(Cui et al., 2017)"
+     },
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     }
+    ],
+    "sentence": "Neural baselines: We use the same implementations of AS-READER (Kadlec et al., 2016) and AOA-READER (Cui et al., 2017) as Pappas et al. (2018), who also provide short descriptions of these neural models, not provided here to save space."
+   },
+   {
+    "sec_idx": 5,
+    "par_idx": 3,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": "#b2",
+      "type": "bibr",
+      "text": "(Beltagy et al., 2019)"
+     },
+     {
+      "target": "#b9",
+      "type": "bibr",
+      "text": "(Devlin et al., 2019)"
+     }
+    ],
+    "sentence": "BERT-based model: We use SCIBERT (Beltagy et al., 2019), a pre-trained BERT (Devlin et al., 2019) model for scientific text."
+   },
+   {
+    "sec_idx": 5,
+    "par_idx": 3,
+    "s_idx": 2,
+    "refs": [
+     {
+      "target": "#b5",
+      "type": "bibr",
+      "text": "(Bird et al., 2009)"
+     }
+    ],
+    "sentence": "For each passage-question instance, we split the passage into sentences using NLTK (Bird et al., 2009)."
+   },
+   {
+    "sec_idx": 5,
+    "par_idx": 3,
+    "s_idx": 3,
+    "refs": [
+     {
+      "target": null,
+      "type": "bibr",
+      "text": "[MASK]"
+     },
+     {
+      "target": "#fig_0",
+      "type": "figure",
+      "text": "2"
+     }
+    ],
+    "sentence": "For each sentence, we concatenate it (using BERT's [SEP] token) with the question, after replacing the XXXX with BERT's [MASK] token, and we feed the concatenation to SCIBERT (Fig. 2)."
+   },
+   {
+    "sec_idx": 5,
+    "par_idx": 4,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": "#b9",
+      "type": "bibr",
+      "text": "(Devlin et al., 2019)"
+     }
+    ],
+    "sentence": "8 https://www.semanticscholar.org/ 9 BERT's tokenizer splits the entity identifiers into subtokens (Devlin et al., 2019)."
+   },
+   {
+    "sec_idx": 5,
+    "par_idx": 4,
+    "s_idx": 4,
+    "refs": [
+     {
+      "target": "#b11",
+      "type": "bibr",
+      "text": "(Dror et al., 2018)"
+     }
+    ],
+    "sentence": "We used singe-tailed Approximate Randomization (Dror et al., 2018), randomly swapping the answers to 50% of the questions for 10k iterations."
+   },
+   {
+    "sec_idx": 6,
+    "par_idx": 0,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": null,
+      "type": "table",
+      "text": "3"
+     }
+    ],
+    "sentence": "Table 3 reports the accuracy of all methods on BIOMRC LITE for Settings A and B. In both settings, all the neural models clearly outperform all the basic baselines, with BASE3 (most frequent entity of the passage) performing worst and BASE3+ performing much better, as expected."
+   },
+   {
+    "sec_idx": 6,
+    "par_idx": 2,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": null,
+      "type": "table",
+      "text": "3"
+     },
+     {
+      "target": "#foot_4",
+      "type": "foot",
+      "text": "10"
+     }
+    ],
+    "sentence": "In both Settings A and B, AOA-READER performs better than AS-READER, which was expected since it uses a more elaborate attention mechanism, at the expense of taking longer to train (Table 3). 10"
+   },
+   {
+    "sec_idx": 6,
+    "par_idx": 3,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": "#foot_5",
+      "type": "foot",
+      "text": "11"
+     }
+    ],
+    "sentence": "The trainable parameters of AS-READER and AOA-READER are almost double in Setting A compared to Setting B. To some extent, this difference is due to the fact that for both models we learn a word embedding for each @entityN pseudoidentifier, and in Setting A the numbering of the identifiers is not reset for each passage-question instance, leading to many more pseudo-identifiers (31.77k pseudo-identifiers in the vocabulary of Setting A vs. only 20 in Setting B); this accounts for a difference of 1.59M parameters. 11"
+   },
+   {
+    "sec_idx": 6,
+    "par_idx": 3,
+    "s_idx": 4,
+    "refs": [
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     }
+    ],
+    "sentence": "AOA-READER was also better than AS-READER in the experiments of Pappas et al. (2018) on a LITE version of their BIOREAD dataset, but the development and test accuracy of AOA-READER in Setting A of BIOREAD was reported to be only 52."
+   },
+   {
+    "sec_idx": 6,
+    "par_idx": 3,
+    "s_idx": 5,
+    "refs": [
+     {
+      "target": null,
+      "type": "bibr",
+      "text": "41% and 51.19%,"
+     },
+     {
+      "target": null,
+      "type": "bibr",
+      "text": "respectively (cf. Table 3)"
+     }
+    ],
+    "sentence": "41% and 51.19%,respectively (cf. Table 3); in Setting B, it was 50.44% and 49.94%, respectively."
+   },
+   {
+    "sec_idx": 6,
+    "par_idx": 3,
+    "s_idx": 7,
+    "refs": [
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     },
+     {
+      "target": "#foot_6",
+      "type": "foot",
+      "text": "12"
+     }
+    ],
+    "sentence": "The results of Pappas et al. (2018) were slightly higher in Setting A than in Setting B, suggesting that AOA-READER was able to benefit from the global scope of entity identifiers, unlike our findings in BIOMRC. 12"
+   },
+   {
+    "sec_idx": 6,
+    "par_idx": 3,
+    "s_idx": 8,
+    "refs": [
+     {
+      "target": "#fig_1",
+      "type": "figure",
+      "text": "3"
+     }
+    ],
+    "sentence": "igure 3 shows how many passage-question instances of the development subset of BIOMRC LITE have 2, 3, . . ."
+   },
+   {
+    "sec_idx": 6,
+    "par_idx": 3,
+    "s_idx": 11,
+    "refs": [
+     {
+      "target": null,
+      "type": "table",
+      "text": "3"
+     }
+    ],
+    "sentence": "Overall, however, BASE4 is clearly the best basic baseline, but it is outperformed by all neural models in almost all cases, as in Table 3. SCIBERT-MAX-READER is again the best system in both settings, almost always outperforming the other systems."
+   },
+   {
+    "sec_idx": 6,
+    "par_idx": 3,
+    "s_idx": 13,
+    "refs": [
+     {
+      "target": null,
+      "type": "table",
+      "text": "3"
+     },
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     }
+    ],
+    "sentence": "AOA-READER is competitive to SCIBERT-SUM-READER in Setting A, and slightly better overall than SCIBERT-SUM-READER in Setting B, as can be seen in Table 3. Pappas et al. (2018) asked humans (non-experts) to answer 30 questions from BIOREAD in Setting A, and 30 other questions in Setting B. We mirrored their experiment by providing 30 questions (from"
+   },
+   {
+    "sec_idx": 8,
+    "par_idx": 2,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": null,
+      "type": "figure",
+      "text": "4"
+     }
+    ],
+    "sentence": "Figure 4: Example from BIOMRC TINY."
+   },
+   {
+    "sec_idx": 8,
+    "par_idx": 3,
+    "s_idx": 1,
+    "refs": [
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     },
+     {
+      "target": null,
+      "type": "figure",
+      "text": "4"
+     }
+    ],
+    "sentence": "As in the experiment of Pappas et al. (2018), in Setting A both the experts and non-experts were also provided with the original names of the biomedical entities (entity names before replacing them with @entityN pseudo-identifiers) to allow them to use prior knowledge; see the top three zones of Fig. 4 for an example."
+   },
+   {
+    "sec_idx": 8,
+    "par_idx": 3,
+    "s_idx": 3,
+    "refs": [
+     {
+      "target": "#tab_4",
+      "type": "table",
+      "text": "4"
+     }
+    ],
+    "sentence": "Table 4 reports the human and system accuracy scores on BIOMRC TINY."
+   },
+   {
+    "sec_idx": 8,
+    "par_idx": 3,
+    "s_idx": 10,
+    "refs": [
+     {
+      "target": "#tab_4",
+      "type": "table",
+      "text": "4"
+     },
+     {
+      "target": null,
+      "type": "table",
+      "text": "3"
+     }
+    ],
+    "sentence": "Also, SCIBERT-MAX-READER performs better than both experts and non-experts in Setting A, and better than non-experts in Setting B. However, BIOMRC TINY contains only 30 instances in each setting, and hence the results of Table 4 are less reliable than those from BIOMRC LITE (Table 3)."
+   },
+   {
+    "sec_idx": 8,
+    "par_idx": 4,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     }
+    ],
+    "sentence": "In the corresponding experiments of Pappas et al. (2018), which were conducted in Setting B only, the average accuracy of the (non-expert) humans was 68.01%, but the humans were also allowed not to answer (when clueless), and unanswered questions were excluded from accuracy."
+   },
+   {
+    "sec_idx": 8,
+    "par_idx": 5,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": "#tab_5",
+      "type": "table",
+      "text": "5"
+     }
+    ],
+    "sentence": "Inter-annotator agreement was also higher for experts than non-experts in our experiment, in both Settings A and B (Table 5)."
+   },
+   {
+    "sec_idx": 9,
+    "par_idx": 0,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": "#b3",
+      "type": "bibr",
+      "text": "(Ben Abacha and Demner-Fushman, 2019)"
+     },
+     {
+      "target": "#b21",
+      "type": "bibr",
+      "text": "(Pampari et al., 2018;"
+     },
+     {
+      "target": "#b3",
+      "type": "bibr",
+      "text": "Ben Abacha et al., 2019;"
+     },
+     {
+      "target": "#b31",
+      "type": "bibr",
+      "text": "Zhang et al., 2018)"
+     }
+    ],
+    "sentence": "Several biomedical MRC datasets exist, but have orders of magnitude fewer questions than BIOMRC (Ben Abacha and Demner-Fushman, 2019) or are not suitable for a cloze-style MRC task (Pampari et al., 2018;Ben Abacha et al., 2019;Zhang et al., 2018)."
+   },
+   {
+    "sec_idx": 9,
+    "par_idx": 0,
+    "s_idx": 1,
+    "refs": [
+     {
+      "target": "#b26",
+      "type": "bibr",
+      "text": "( \u0160uster and Daelemans, 2018)"
+     }
+    ],
+    "sentence": "The closest dataset to ours is CLICR ( \u0160uster and Daelemans, 2018), a biomedical MRC dataset with cloze-type questions created using full-text articles from BMJ case reports. 13"
+   },
+   {
+    "sec_idx": 9,
+    "par_idx": 0,
+    "s_idx": 3,
+    "refs": [
+     {
+      "target": null,
+      "type": "bibr",
+      "text": "\u0160uster et al. used"
+     },
+     {
+      "target": "#b25",
+      "type": "bibr",
+      "text": "(Soysal et al., 2017)"
+     },
+     {
+      "target": null,
+      "type": "bibr",
+      "text": "Metathesaurus (Lindberg et al., 1993)"
+     }
+    ],
+    "sentence": "\u0160uster et al. used CLAMP (Soysal et al., 2017) to detect biomedical entities and link them to concepts of the UMLS Metathesaurus (Lindberg et al., 1993)."
+   },
+   {
+    "sec_idx": 9,
+    "par_idx": 0,
+    "s_idx": 5,
+    "refs": [
+     {
+      "target": "#b7",
+      "type": "bibr",
+      "text": "(Chen et al., 2017)"
+     },
+     {
+      "target": "#b10",
+      "type": "bibr",
+      "text": "(Dhingra et al., 2017)"
+     },
+     {
+      "target": "#b8",
+      "type": "bibr",
+      "text": "(Cui et al., 2017)"
+     }
+    ],
+    "sentence": "\u0160uster et al. experimented with the Stanford Reader (Chen et al., 2017) and the Gated-Attention Reader (Dhingra et al., 2017), which perform worse than AOA-READER (Cui et al., 2017)."
+   },
+   {
+    "sec_idx": 9,
+    "par_idx": 1,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": "#b29",
+      "type": "bibr",
+      "text": "(Tsatsaronis et al., 2015)"
+     }
+    ],
+    "sentence": "The QA dataset of BIOASQ (Tsatsaronis et al., 2015) contains questions written by biomedical experts."
+   },
+   {
+    "sec_idx": 9,
+    "par_idx": 2,
+    "s_idx": 0,
+    "refs": [
+     {
+      "target": "#b14",
+      "type": "bibr",
+      "text": "(Hill et al., 2016;"
+     },
+     {
+      "target": "#b13",
+      "type": "bibr",
+      "text": "Hermann et al., 2015;"
+     },
+     {
+      "target": "#b12",
+      "type": "bibr",
+      "text": "Dunn et al., 2017;"
+     },
+     {
+      "target": "#b1",
+      "type": "bibr",
+      "text": "Bajgar et al., 2016)"
+     },
+     {
+      "target": null,
+      "type": "bibr",
+      "text": "(Chen et al., 2016)"
+     }
+    ],
+    "sentence": "Outside the biomedical domain, several clozestyle open-domain MRC datasets have been created automatically (Hill et al., 2016;Hermann et al., 2015;Dunn et al., 2017;Bajgar et al., 2016), but have been criticized of containing questions that can be answered by simple heuristics like our basic baselines (Chen et al., 2016)."
+   },
+   {
+    "sec_idx": 9,
+    "par_idx": 2,
+    "s_idx": 1,
+    "refs": [
+     {
+      "target": "#b16",
+      "type": "bibr",
+      "text": "(Kwiatkowski et al., 2019;"
+     },
+     {
+      "target": "#b24",
+      "type": "bibr",
+      "text": "Rajpurkar et al., 2016"
+     },
+     {
+      "target": "#b23",
+      "type": "bibr",
+      "text": "Rajpurkar et al., , 2018;;"
+     },
+     {
+      "target": "#b28",
+      "type": "bibr",
+      "text": "Trischler et al., 2017;"
+     },
+     {
+      "target": "#b20",
+      "type": "bibr",
+      "text": "Nguyen et al., 2016;"
+     },
+     {
+      "target": "#b17",
+      "type": "bibr",
+      "text": "Lai et al., 2017)"
+     }
+    ],
+    "sentence": "There are also several large open-domain MRC datasets annotated by humans (Kwiatkowski et al., 2019;Rajpurkar et al., 2016Rajpurkar et al., , 2018;;Trischler et al., 2017;Nguyen et al., 2016;Lai et al., 2017)."
+   },
+   {
+    "sec_idx": 9,
+    "par_idx": 2,
+    "s_idx": 2,
+    "refs": [
+     {
+      "target": "#b16",
+      "type": "bibr",
+      "text": "(Kwiatkowski et al., 2019)"
+     }
+    ],
+    "sentence": "To our knowledge the biggest human annotated corpus is Google's Natural Questions dataset (Kwiatkowski et al., 2019), with approximately 300k human annotated examples."
+   },
+   {
+    "sec_idx": 10,
+    "par_idx": 0,
+    "s_idx": 1,
+    "refs": [
+     {
+      "target": "#b22",
+      "type": "bibr",
+      "text": "Pappas et al. (2018)"
+     }
+    ],
+    "sentence": "Care was taken to reduce noise, compared to the previous BIOREAD dataset of Pappas et al. (2018)."
+   },
+   {
+    "sec_idx": 10,
+    "par_idx": 1,
+    "s_idx": 1,
+    "refs": [
+     {
+      "target": "#b32",
+      "type": "bibr",
+      "text": "(Zhang et al., 2020)"
+     }
+    ],
+    "sentence": "We also plan to experiment with other MRC models that recently performed particularly well on opendomain MRC datasets (Zhang et al., 2020)."
+   },
+   {
+    "sec_idx": 10,
+    "par_idx": 1,
+    "s_idx": 2,
+    "refs": [
+     {
+      "target": "#b29",
+      "type": "bibr",
+      "text": "(Tsatsaronis et al., 2015)"
+     }
+    ],
+    "sentence": "Finally, we aim to explore if pre-training neural models on BIOREAD is beneficial in human-generated biomedical datasets (Tsatsaronis et al., 2015)."
+   }
+  ]
+ },
+ "research_artifacts": [
+  {
+   "Paragraph": "We introduce BIOMRC, a large-scale clozestyle biomedical MRC dataset. Care was taken to reduce noise, compared to the previous BIOREAD dataset of Pappas et al. (2018). Experiments show that simple heuristics do not perform well on the new dataset, and that two neural MRC models that had been tested on BIOREAD perform much better on BIOMRC, indicating that the new dataset is indeed less noisy or at least that its task is more feasible. Non-expert human performance is also higher on the new dataset compared to BIOREAD, and biomedical experts perform even better. We also introduce a new BERT-based MRC model, the best version of which substantially outperforms all other methods tested, reaching or surpassing the accuracy of biomedical experts in some experiments. We make the new dataset available in three different sizes, also releasing our code, and providing a leaderboard.",
+   "Candidates": "[dataset] : BIOMRC | [dataset] : dataset | [software] : models | [software] : NON | [software] : BERT | [software] : model | [software] : methods",
+   "Results": "dataset : BIOMRC"
+  },
+  {
+   "Paragraph": "Creating large corpora with human annotations is a demanding process in both time and resources. Research teams often turn to distantly supervised or unsupervised methods to extract training examples from textual data. In machine reading comprehension (MRC) (Hermann et al., 2015), a training instance can be automatically constructed by taking an unlabeled passage of multiple sentences, along with another smaller part of text, also unlabeled, usually the next sentence. Then a named entity of the smaller text is replaced by a placeholder. In this setting, MRC systems are trained (and evaluated for their ability) to read the passage and the smaller text, and guess the named entity that was replaced by the placeholder, which is typically one of the named entities of the passage. This kind of question answering (QA) is also known as cloze-type questions (Taylor, 1953). Several datasets have been created following this approach either using books (Hill et al., 2016;Bajgar et al., 2016) or news articles (Hermann et al., 2015). Datasets of this kind are noisier than MRC datasets containing human-authored questions and manually annotated passage spans that answer them (Rajpurkar et al., 2016(Rajpurkar et al., , 2018;;Nguyen et al., 2016). They require no human annotations, however, which is particularly important in biomedical question answering, where employing annotators with appropriate expertise is costly. For example, the BIOASQ QA dataset (Tsatsaronis et al., 2015) currently contains approximately 3k questions, much fewer than the 100k questions of a SQUAD (Rajpurkar et al., 2016), exactly because it relies on expert annotators.",
+   "Candidates": "[dataset] : corpora | [software] : process | [software] : methods | [dataset] : data | [dataset] : INSTANCE | [software] : systems | [dataset] : KIND | [dataset] : datasets | [software] : approach | [dataset] : BioASQ | [dataset] : dataset | [dataset] : SQuAD",
+   "Results": "N/A"
+  },
+  {
+   "Paragraph": "To bypass the need for expert annotators and produce a biomedical MRC dataset large enough to train (or pre-train) deep learning models, Pappas et al. (2018) adopted the cloze-style questions approach. They used the full text of unlabeled biomedical articles from PUBMED CENTRAL, 1 and METAMAP (Aronson and Lang, 2010) to annotate the biomedical entities of the articles. They extracted sequences of 21 sentences from the articles. The first 20 sentences were used as a passage and the last sentence as a cloze-style question. A biomedical entity of the 'question' was replaced by a placeholder, and systems have to guess which biomedical entity of the passage can best fill the placeholder. This allowed Pappas et al. to produce a dataset, called BIOREAD, of approximately 16.4 million questions. As the same authors reported, however, the mean accuracy of three humans on a sample of 30 questions from BIOREAD was only 68%. Although this low score may be due to the fact that the three subjects were not biomedical experts, it is easy to see, by examining samples of BIOREAD, that many examples of the dataset do 1 https://www.ncbi.nlm.nih.gov/pmc/ 'question' originating from caption: \"figure 4 htert @entity6 and @entity4 XXXX cell invasion.\"",
+   "Candidates": "[dataset] : dataset | [software] : models | [software] : approach | [dataset] : Pubmed | [software] : systems | [dataset] : Cell",
+   "Results": "dataset : BIOREAD"
+  },
+  {
+   "Paragraph": "'question' originating from reference : \"2004 , 17 , 250 257 .14967013 not make sense. Many instances contain passages or questions crossing article sections, or originating from the references sections of articles, or they include captions and footnotes (Table 1). Another source of noise is METAMAP, which often misses or mistakenly identifies biomedical entities (e.g., it often annotates 'to' as the country Togo).",
+   "Candidates": "",
+   "Results": "N/A"
+  },
+  {
+   "Paragraph": "In this paper, we introduce BIOMRC, a new dataset for biomedical MRC that can be viewed as an improved version of BIOREAD. To avoid crossing sections, extracting text from references, captions, tables etc., we use abstracts and titles of biomedical articles as passages and questions, respectively, which are clearly marked up in PUBMED data, instead of using the full text of the articles. Using titles and abstracts is a decision that favors precision over recall. Titles are likely to be related to their abstracts, which reduces the noise-tosignal ratio significantly and makes it less likely to generate irrelevant questions for a passage. We replace a biomedical entity in each title with a placeholder, and we require systems to guess the hidden entity by considering the entities of the abstract as candidate answers. Unlike BIOREAD, we use PUBTATOR (Wei et al., 2012), a repository that provides approximately 25 million abstracts and their corresponding titles from PUBMED, with multiple annotations. 2 We use DNORM's biomedical entity annotations, which are more accurate than METAMAP's (Leaman et al., 2013). We also perform several checks, discussed below, to discard passage-question instances that are too easy, and we show that the accuracy of experts and nonexpert humans reaches 85% and 82%, respectively, on a sample of 30 instances for each annotator type, which is an indication that the new dataset is indeed less noisy, or at least that the task is more feasible for humans. Following Pappas et al. (2018), we release two versions of BIOMRC, LARGE and LITE, containing 812k and 100k instances respectively, for researchers with more or fewer resources, along with the 60 instances (TINY) humans answered. Random samples from BIOMRC LARGE where selected to create LITE and TINY. BIOMRC TINY is used only as a test set; it has no training and validation subsets.",
+   "Candidates": "[dataset] : BIOMRC | [dataset] : dataset | [software] : ETC | [software] : USE | [dataset] : Pubmed | [dataset] : data | [software] : systems | [dataset] : repository",
+   "Results": "dataset : BIOMRC"
+  },
+  {
+   "Paragraph": "We tested on BIOMRC LITE the two deep learning MRC models that Pappas et al. (2018) had tested on BIOREAD LITE, namely Attention Sum Reader (AS-READER) (Kadlec et al., 2016) and Attention Over Attention Reader (AOA-READER) (Cui et al., 2017). Experimental results show that AS-READER and AOA-READER perform better on BIOMRC, with the accuracy of AOA-READER reaching 70% compared to the corresponding 52% accuracy of Pappas et al. (2018), which is a further indication that the new dataset is less noisy or that at least its task is more feasible. We also developed a new BERTbased (Devlin et al., 2019) MRC model, the best version of which (SCIBERT-MAX-READER) performs even better, with its accuracy reaching 80%. We encourage further research on biomedical MRC by making our code and data publicly available, and by creating an on-line leaderboard for BIOMRC.3",
+   "Candidates": "[dataset] : BIOMRC | [software] : models | [dataset] : SUM | [dataset] : dataset | [software] : model | [dataset] : data | [software] : LINE",
+   "Results": "software : BIOMRC LITE | software : Attention Sum Reader (AS-READER) | software : BERT-MAX-READER"
+  },
+  {
+   "Paragraph": "Using PUBTATOR, we gathered approx. 25 million abstracts and their titles. We discarded articles with titles shorter than 15 characters or longer than 60 tokens, articles without abstracts, or with abstracts shorter than 100 characters, or fewer than 10 sentences. We also removed articles with abstracts containing fewer than 5 entity annotations, or fewer than 2 or more than 20 distinct biomedical entity identifiers. (PUBTATOR assigns the same identifier to all the synonyms of a biomedical entity; e.g., 'hemorrhagic stroke' and 'stroke' have the same identifier 'MESH:D020521'.) We also discarded articles containing entities not linked to any of the ontologies used by PUBTATOR,4 or entities linked to multiple ontologies (entities with multiple ids), or entities whose spans overlapped with those of other entities. We also removed articles with no entities in their titles, and articles with no entities shared by the title and abstract. 5 assage BACKGROUND: Most brain metastases arise from @entity0 . Few studies compare the brain regions they involve, their numbers and intrinsic attributes. METHODS: Records of all @entity1 referred to Radiation Oncology for treatment of symptomatic brain metastases were obtained. Computed tomography (n = 56) or magnetic resonance imaging (n = 72) brain scans were reviewed. RESULTS: Data from 68 breast and 62 @entity2 @entity1 were compared. Brain metastases presented earlier in the course of the lung than of the @entity0 @entity1 (p = 0.001). There were more metastases in the cerebral hemispheres of the breast than of the @entity2 @entity1 (p = 0.014). More @entity0 @entity1 had cerebellar metastases (p = 0.001). The number of cerebral hemisphere metastases and presence of cerebellar metastases were positively correlated (p = 0.001). The prevalence of at least one @entity3 surrounded with > 2 cm of @entity4 was greater for the lung than for the breast @entity1 (p = 0.019). The @entity5 type, rather than the scanning method, correlated with differences between these variables. CONCLUSIONS: Brain metastases from lung occur earlier, are more @entity4 , but fewer in number than those from @entity0 . Cerebellar brain metastases are more frequent in @entity0 .",
+   "Candidates": "[dataset] : COMPARE | [software] : methods | [dataset] : records | [dataset] : computed tomography | [dataset] : scans | [dataset] : data | [software] : method",
+   "Results": "dataset : unnamed | dataset : breast | dataset : n/a"
+  },
+  {
+   "Paragraph": "@entity0 : ['breast and lung cancer'] ; @entity1 : ['patients'] ; @entity2 : ['lung cancer'] ; @entity3 : ['metastasis'] ; @entity4 : ['edematous', 'edema'] ; @entity5 : ['primary tumor'] Question Attributes of brain metastases from XXXX . Answer @entity0 : ['breast and lung cancer']",
+   "Candidates": "",
+   "Results": "N/A"
+  },
+  {
+   "Paragraph": "Figure 1: Example passage-question instance of BIOMRC. The passage is the abstract of an article, with biomedical entities replaced by @entityN pseudo-identifiers. The original entity names are shown in square brackets. Both 'edematous' and 'edema' are replaced by '@entity4', because PUBTATOR considers them synonyms. The question is the title of the article, with a biomedical entity replaced by XXXX. @entity0 is the correct answer. Finally, to avoid making the dataset too easy for a system that would always select the entity with the most occurrences in the abstract, we removed a passage-question instance if the most frequent entity of its passage (abstract) was also the answer to the cloze-style question (title with placeholder); if multiple entities had the same top frequency in the passage, the instance was retained. We ended up with approx. 812k passage-question instances, which form BIOMRC LARGE, split into training, development, and test subsets (Table 2). The LITE and TINY versions of BIOMRC are subsets of LARGE. In all versions of BIOMRC (LARGE, LITE, TINY), the entity identifiers of PUBTATOR are replaced by pseudo-identifiers of the form @entityN (Fig. 1), as in the CNN and Daily Mail datasets (Hermann et al., 2015). We provide all BIOMRC versions in two forms, corresponding to what Pappas et al.  (2018) call Settings A and B in BIOREAD. 6 In Setting A, each pseudo-identifier has a global scope, meaning that each biomedical entity has a unique 6 Pappas et al. (2018) actually call 'option a' and 'option b' our Setting B and A, respectively. pseudo-identifier in the whole dataset. This allows a system to learn information about the entity represented by a pseudo-identifier from all the occurrences of the pseudo-identifier in the training set. For example after seeing the same pseudo-identifier multiple times a model may learn that it stands for a drug, or that a particular pseudo-identifier tends to neighbor with specific words. Then, much like a language model, a system may guess the pseudoidentifier that should fill in the placeholder even without the passage, or at least it may infer a prior probability for each candidate answer. In contrast, Setting B uses a local scope, i.e., it restarts the numbering of the pseudo-identifiers (from @en-tity0) anew in each passage-question instance. This forces the models to rely only on information about the entities that can be inferred from the particular passage and question. This corresponds to a nonexpert answering the question, who does not have any prior knowledge of the biomedical entities.",
+   "Candidates": "[dataset] : INSTANCE | [dataset] : BIOMRC | [dataset] : dataset | [software] : system | [dataset] : datasets | [software] : model | [software] : models",
+   "Results": "dataset : CNN"
+  },
+  {
+   "Paragraph": "Table 2 provides statistics on BIOMRC. In TINY, we use 30 different passage-question instances in Settings A and B, because in both settings we asked the same humans to answer the questions, and we Each sentence of the passage is concatenated with the question and fed to SCIBERT. The top-level embedding produced by SCIBERT for the first sub-token of each candidate answer is concatenated with the toplevel embedding of [MASK] (which replaces the placeholder XXXX) of the question, and they are fed to an MLP, which produces the score of the candidate answer. In SCIBERT-SUM-READER, the scores of multiple occurrences of the same candidate are summed, whereas SCIBERT-MAX-READER takes their maximum.",
+   "Candidates": "[dataset] : BIOMRC | [software] : USE | [dataset] : FED | [dataset] : MLP | [dataset] : SUM",
+   "Results": "software : SCIBERT | dataset : bioMRC"
+  },
+  {
+   "Paragraph": "did not want them to remember instances from one setting to the other. In LARGE and LITE, the instances are the same across the two settings, apart from the numbering of the entity identifiers.",
+   "Candidates": "",
+   "Results": "software : LITE"
+  },
+  {
+   "Paragraph": "We experimented only on BIOMRC LITE and TINY, since we did not have the computational resources to train the neural models we considered on the LARGE version of BIOREAD. Pappas et al. (2018) also reported experimental results only on a LITE version of their BIOREAD dataset. We hope that others may be able to experiment on BIOMRC LARGE, and we make our code available, as already noted.",
+   "Candidates": "[dataset] : BIOMRC | [software] : models | [dataset] : dataset | [software] : HOPE",
+   "Results": "dataset : BIOMRC LITE | software : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project : biomedical research project :"
+  },
+  {
+   "Paragraph": "We experimented with the four basic baselines (BASE1-4) that Pappas et al. (2018) used in BIOREAD, the two neural MRC models used by the same authors, AS-READER (Kadlec et al., 2016) and AOA-READER (Cui et al., 2017), and a BERTbased (Devlin et al., 2019) model we developed.",
+   "Candidates": "[software] : models | [software] : model",
+   "Results": "software : BASE1-4 | software : BERT"
+  },
+  {
+   "Paragraph": "Basic baselines: BASE1, 2, 3 return the first, last, and the entity that occurs most frequently in the passage (or randomly one of the entities with the same highest frequency, if multiple exist), respectively. Since in BIOREAD the correct answer is never (by construction) the most frequent entity of the passage, unless there are multiple entities with the same highest frequency, BASE3 performs poorly. Hence, we also include a variant, BASE3+, which randomly selects one of the entities of the passage with the same highest frequency, if multiple exist, otherwise it selects the entity with the second highest frequency. BASE4 extracts all the token n-grams from the passage that include an entity identifier (@entityN ), and all the n-grams from the question that include the placeholder (XXXX). 7  Then for each candidate answer (entity identifier), it counts the tokens shared between the n-grams that include the candidate and the n-grams that include the placeholder. The candidate with the most shared tokens is selected. These baselines are used to check that the questions cannot be answered by simplistic heuristics (Chen et al., 2016).",
+   "Candidates": "[dataset] : SECOND",
+   "Results": "software : BASE1 | dataset : bioread"
+  },
+  {
+   "Paragraph": "Neural baselines: We use the same implementations of AS-READER (Kadlec et al., 2016) and AOA-READER (Cui et al., 2017) as Pappas et al. (2018), who also provide short descriptions of these neural models, not provided here to save space. The hyper-parameters of both methods were tuned on the development set of BIOMRC LITE.",
+   "Candidates": "[software] : USE | [software] : models | [dataset] : SPACE | [software] : methods | [dataset] : BIOMRC",
+   "Results": "software : AOA-READER | software : BIOMRC LITE"
+  },
+  {
+   "Paragraph": "BERT-based model: We use SCIBERT (Beltagy et al., 2019), a pre-trained BERT (Devlin et al., 2019) model for scientific text. SCIBERT is pretrained on 1.14 million articles from Semantic Scholar, 8 of which 82% (935k) are biomedical and the rest come from computer science. For each passage-question instance, we split the passage into sentences using NLTK (Bird et al., 2009). For each sentence, we concatenate it (using BERT's [SEP] token) with the question, after replacing the XXXX with BERT's [MASK] token, and we feed the concatenation to SCIBERT (Fig. 2). We collect SCIBERT's top-level vector representations of the entity identifiers (@entityN ) of the sentence and [MASK]. 9 For each entity of the sentence, we concatenate its top-level representation with that of [MASK], and we feed them to a Multi-Layer Perceptron (MLP) to obtain a score for the particular entity (candidate answer). We thus obtain a score for all the entities of the passage. If an entity occurs multiple times in the passage, we take the sum or the maximum of the scores of its occurrences. In both cases, a softmax is then applied to the scores of all the entities, and the entity with the maximum score is selected as the answer. We call 7 We tried n = 2, . . . , 6 and use n = 3, which gave the best accuracy on the development set of BIOMRC LARGE.",
+   "Candidates": "[software] : BERT | [software] : model | [software] : USE | [dataset] : Semantic Scholar | [dataset] : INSTANCE | [dataset] : BIRD | [dataset] : BiRD | [dataset] : MLP | [dataset] : SUM | [software] : Softmax | [dataset] : BIOMRC",
+   "Results": "software : BERT"
+  },
+  {
+   "Paragraph": "8 https://www.semanticscholar.org/ 9 BERT's tokenizer splits the entity identifiers into subtokens (Devlin et al., 2019). We use the first one. The top-level token representations of BERT are context-aware, and it is common to use the first or last sub-token of each named-entity. In the lower zone (neural methods), the difference from each accuracy score to the next best is statistically significant (p < 0.02). We used singe-tailed Approximate Randomization (Dror et al., 2018), randomly swapping the answers to 50% of the questions for 10k iterations.",
+   "Candidates": "[software] : BERT | [software] : USE | [dataset] : AWARE | [software] : AWARE | [software] : methods",
+   "Results": "software : BERT"
+  },
+  {
+   "Paragraph": "this model SCIBERT-SUM-READER or SCIBERT-MAX-READER, depending on how it aggregates the scores of multiple occurrences of the same entity. SCIBERT-SUM-READER is closer to AS-READER and AOA-READER, which also sum the scores of multiple occurrences of the same entity. This summing aggregation, however, favors entities with several occurrences in the passage, even if the scores of all the occurrences are low. Our experiments indicate that SCIBERT-MAX-READER performs better. In all cases, we only update the parameters of the MLP during training, keeping the parameters of SCIBERT frozen to their pre-trained values to speed up training. With more computing resources, it may be possible to improve the scores of SCIBERT-MAX-READER (and SCIBERT-SUM-READER) further by fine-tuning SCIBERT on BIOMRC training data.",
+   "Candidates": "[software] : model | [dataset] : SUM | [dataset] : MLP | [software] : SPEED | [dataset] : BIOMRC | [dataset] : data",
+   "Results": "software : SCIBERT-SUM-READER"
+  },
+  {
+   "Paragraph": "Table 3 reports the accuracy of all methods on BIOMRC LITE for Settings A and B. In both settings, all the neural models clearly outperform all the basic baselines, with BASE3 (most frequent entity of the passage) performing worst and BASE3+ performing much better, as expected. In both settings, SCIBERT-MAX-READER clearly outperforms all the other methods on both the development and test sets. The performance of SCIBERT-SUM-READER is approximately ten percentage points worse than SCIBERT-MAX-READER's on the development and test sets of both settings, indicating that the superior results of SCIBERT-MAX-READER are to a large extent due to the different aggregation function (max instead of sum) it uses to combine the scores of multiple occurrences of a candidate answer, not to the extensive pre-training of SCIBERT. AOA-READER, which does not employ any pre-training, is competitive to SCIBERT-SUM-READER in Setting A, and performs better than SCIBERT-SUM-READER in Setting B, which again casts doubts on the value of SCIBERT's extensive pre-training. We expect, however, that the performance of the SCIBERT-based models, could be improved further by fine-tuning SCIBERT's parameters.",
+   "Candidates": "[software] : methods | [dataset] : BIOMRC | [software] : models | [dataset] : SUM | [software] : function | [dataset] : VALUE",
+   "Results": "software : SCIBERT-MAX-READER"
+  },
+  {
+   "Paragraph": "The performance of SCIBERT-SUM-READER is slightly better in Setting A than in Setting B, which might suggest that the model manages to capture global properties of the entity pseudo-identifiers from the entire training set. However, the performance of SCIBERT-MAX-READER is almost the same across the two settings, which contradicts the previous hypothesis. Furthermore, the development and test performance of AS-READER and AOA-READER is higher in Setting B than A, indicating that these two models do not capture global properties of entities well, performing better when forced to consider only the information of the particular passage-question instance. Overall, we see no strong evidence that the models we considered are able to learn global properties of the entities.",
+   "Candidates": "[dataset] : SUM | [software] : model | [software] : models | [dataset] : INSTANCE",
+   "Results": "software : SCIBERT-SUM-READER"
+  },
+  {
+   "Paragraph": "In both Settings A and B, AOA-READER performs better than AS-READER, which was expected since it uses a more elaborate attention mechanism, at the expense of taking longer to train (Table 3). 10 he two SCIBERT-based models are also competitive in terms of training time, because we only train the MLP (154k parameters) on top of SCIB-ERT, keeping the parameters of SCIBERT frozen.",
+   "Candidates": "[software] : mechanism | [software] : models | [dataset] : MLP",
+   "Results": "software : SCIBERT"
+  },
+  {
+   "Paragraph": "The trainable parameters of AS-READER and AOA-READER are almost double in Setting A compared to Setting B. To some extent, this difference is due to the fact that for both models we learn a word embedding for each @entityN pseudoidentifier, and in Setting A the numbering of the identifiers is not reset for each passage-question instance, leading to many more pseudo-identifiers (31.77k pseudo-identifiers in the vocabulary of Setting A vs. only 20 in Setting B); this accounts for a difference of 1.59M parameters. 11 The rest of the difference in total parameters (from Setting A to B) is due to the fact that we tuned the hyperparameters of each model separately for each setting (A, B), on the corresponding development set. Hyper-parameter tuning was performed separately for each model in each setting, but led to the same numbers of trainable parameters for AS-READER and AOA-READER, because the trainable parameters are dominated by the parameters of the word embeddings. Note that the hyper-parameters of the two SCIBERT-based models (of their MLPs) were very minimally tuned, hence these models may perform even better with more extensive tuning. AOA-READER was also better than AS-READER in the experiments of Pappas et al. (2018) on a LITE version of their BIOREAD dataset, but the development and test accuracy of AOA-READER in Setting A of BIOREAD was reported to be only 52. 41% and 51.19%,respectively (cf. Table 3); in Setting B, it was 50.44% and 49.94%, respectively. The much higher scores of AOA-READER (and AS-READER) on BIOMRC LITE are an indication that the new dataset is less noisy, or that the task is at least more feasible for machines. The results of Pappas et al. (2018) were slightly higher in Setting A than in Setting B, suggesting that AOA-READER was able to benefit from the global scope of entity identifiers, unlike our findings in BIOMRC. 12 igure 3 shows how many passage-question instances of the development subset of BIOMRC LITE have 2, 3, . . . , 20 candidate answers (top left), and the corresponding accuracy of the basic baselines (top right), and the neural models (bottom). BASE3+ is the best basic baseline for 2 and 3 candidates, and for 2 candidates it is competitive to the neural models. Overall, however, BASE4 is clearly the best basic baseline, but it is outperformed by all neural models in almost all cases, as in Table 3. SCIBERT-MAX-READER is again the best system in both settings, almost always outperforming the other systems. AS-READER is the worst neural model in almost all cases. AOA-READER is competitive to SCIBERT-SUM-READER in Setting A, and slightly better overall than SCIBERT-SUM-READER in Setting B, as can be seen in Table 3. Pappas et al. (2018) asked humans (non-experts) to answer 30 questions from BIOREAD in Setting A, and 30 other questions in Setting B. We mirrored their experiment by providing 30 questions (from",
+   "Candidates": "[software] : models | [dataset] : WORD | [dataset] : INSTANCE | [software] : model | [dataset] : dataset | [dataset] : BIOMRC | [software] : system | [software] : systems | [dataset] : SUM | [software] : NON",
+   "Results": "software : AS-READER | software : BASE3+ | software : BASE4 | software : BASE3+ | software : BASE4 | software : BASE3+ | software : BASE4 | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software : BASE3+ | software :"
+  },
+  {
+   "Paragraph": "The study enrolled 53 @entity1 (29 males, 24 females) with @entity1576 aged 15-88 years. Most of them were 59 years of age and younger. In 1/3 of the @entity1 the diseases started with symptoms of @entity1729, in 2/3 of them-with pulmonary affection. @entity55 was diagnosed in 50 @entity1 (94.3%), acute @entity3617 -in 3 @entity1. ECG changes were registered in about half of the examinees who had no cardiac complaints. 25 of them had alterations in the end part of the ventricular ECG complex; rhythm and conduction disturbances occurred rarely. Mycoplasmosis @entity1 suffering from @entity741 ( @entity741 ) had stable ECG changes while in those free of @entity741 the changes were short. @entity296 foci were absent. @entity299 comparison in @entity1 with @entity1576 and in other @entity1729 has found that cardiovascular system suffers less in acute mycoplasmosis. These data are useful in differential diagnosis of @entity296 . Candidates @entity1 : ['patients'] ; @entity1576 : ['respiratory mycoplasmosis'] ; @entity1729 : ['acute respiratory infections', 'acute respiratory viral infection'] ; @entity55 : ['Pneumonia'] ; @entity3617 : ['bronchitis'] ; @entity741 : ['IHD', 'ischemic heart disease'] ; @entity296 : ['myocardial infections', 'Myocardial necrosis'] ; @entity299 : ['Cardiac damage'] . Question Cardio-vascular system condition in XXXX . Expert Human Answers annotator1: @entity1576; annotator2: @entity1576. Non-expert Human Answers annotator1: @entity296; annotator2: @entity296; annotator3: @entity1576.",
+   "Candidates": "[software] : system | [dataset] : data | [software] : NON",
+   "Results": "N/A"
+  },
+  {
+   "Paragraph": "Systems' Answers AS-READER: @entity1729; AOA-READER: @entity296; SCIBERT-SUM-READER: @entity1576.",
+   "Candidates": "[software] : systems | [dataset] : SUM",
+   "Results": "N/A"
+  },
+  {
+   "Paragraph": "Figure 4: Example from BIOMRC TINY. In Setting A, humans see both the pseudo-identifiers (@entityN ) and the original names of the biomedical entities (shown in square brackets). Systems see only the pseudo-identifiers, but the pseudo-identifiers have global scope over all instances, which allows the systems, at least in principle, to learn entity properties from the entire training set. In Setting B, humans no longer see the original names of the entities, and systems see only the pseudo-identifiers with local scope (numbering reset per passage-question instance).",
+   "Candidates": "[dataset] : BIOMRC | [software] : systems | [dataset] : INSTANCE",
+   "Results": "software : BIOMRC TINY"
+  },
+  {
+   "Paragraph": "BIOMRC LITE) to three non-experts (graduate CS students) in Setting A, and 30 other questions in Setting B. We also showed the same questions of each setting to two biomedical experts. As in the experiment of Pappas et al. (2018), in Setting A both the experts and non-experts were also provided with the original names of the biomedical entities (entity names before replacing them with @entityN pseudo-identifiers) to allow them to use prior knowledge; see the top three zones of Fig. 4 for an example. By contrast, in Setting B the original names of the entities were hidden. Table 4 reports the human and system accuracy scores on BIOMRC TINY. Both experts and nonexperts perform better in Setting A, where they can use prior knowledge about the biomedical entities. The gap between experts and non-experts is three points larger in Setting B than in Setting A, presumably because experts can better deduce properties of the entities from the local context. Turning to the system scores, SCIBERT-MAX-READER is again the best system, but again much of its performance is due to the max-aggregation of the scores of multiple occurrences of entities. With sum-aggregation, SCIBERT-SUM-READER obtains exactly the same scores as AOA-READER, which again performs better than AS-READER. (AOA-READER and SCIBERT-SUM-READER make different mistakes, but their scores just happen to be identical because of the small size of TINY.) Unlike our results on BIOMRC LITE, we now see all systems performing better in Setting A compared to Setting B, which suggests they do benefit from the global scope of entity identifiers. Also, SCIBERT-MAX-READER performs better than both experts and non-experts in Setting A, and better than non-experts in Setting B. However, BIOMRC TINY contains only 30 instances in each setting, and hence the results of Table 4 are less reliable than those from BIOMRC LITE (Table 3).",
+   "Candidates": "[dataset] : BIOMRC | [software] : NON | [dataset] : CS | [software] : USE | [software] : system | [dataset] : GAP | [dataset] : SUM | [software] : systems",
+   "Results": "dataset : BIOMRC LITE"
+  },
+  {
+   "Paragraph": "In the corresponding experiments of Pappas et al. (2018), which were conducted in Setting B only, the average accuracy of the (non-expert) humans was 68.01%, but the humans were also allowed not to answer (when clueless), and unanswered questions were excluded from accuracy. On average, they did not answer 21.11% of the questions, hence their accuracy drops to 46.90% if unanswered questions are counted as errors. In our experiment, the humans were also allowed not to answer (when clueless), but we counted unanswered questions as errors, which we believe better reflects human performance. Non-experts answered all questions in Setting A, and did not answer 13.33% (4/30) of the questions on average in Setting B. The decrease in the questions non-experts did not answer (from 21.11% to 13.33%) in Setting B (the only one considered in BIOREAD) again suggests that the new dataset is less noisy, or at least that the task is more feasible for humans, even when the names of the entities are hidden. Experts did not answer 2.5% (0.75/30) and 1.67% (0.5/30) of the questions on average in Settings A and B, respectively.",
+   "Candidates": "[software] : NON | [dataset] : dataset",
+   "Results": "dataset : Set B"
+  },
+  {
+   "Paragraph": "Inter-annotator agreement was also higher for experts than non-experts in our experiment, in both Settings A and B (Table 5). In Setting B, the agreement of non-experts was particularly low (47.22%), possibly because without entity names they had to rely more on the text of the passage and question, which they had trouble understanding. By contrast, the agreement of experts was slightly higher in Setting B than Setting A, possibly because without prior knowledge about the entities, which may differ across experts, they had to rely to a larger extent on the particular text of the passage and question.",
+   "Candidates": "[software] : NON",
+   "Results": "dataset : Set B"
+  },
+  {
+   "Paragraph": "Several biomedical MRC datasets exist, but have orders of magnitude fewer questions than BIOMRC (Ben Abacha and Demner-Fushman, 2019) or are not suitable for a cloze-style MRC task (Pampari et al., 2018;Ben Abacha et al., 2019;Zhang et al., 2018). The closest dataset to ours is CLICR ( \u0160uster and Daelemans, 2018), a biomedical MRC dataset with cloze-type questions created using full-text articles from BMJ case reports. 13 CLICR contains 100k passage-question instances, the same number as BIOMRC LITE, but much fewer than the 812.7k instances of BIOMRC LARGE. \u0160uster et al. used CLAMP (Soysal et al., 2017) to detect biomedical entities and link them to concepts of the UMLS Metathesaurus (Lindberg et al., 1993). Cloze-style questions were created from the 'learning points' (summaries of important information) of the reports, by replacing biomedical entities with placeholders. \u0160uster et al. experimented with the Stanford Reader (Chen et al., 2017) and the Gated-Attention Reader (Dhingra et al., 2017), which perform worse than AOA-READER (Cui et al., 2017).",
+   "Candidates": "[dataset] : datasets | [dataset] : BIOMRC | [dataset] : dataset | [dataset] : CliCR | [dataset] : UMLS",
+   "Results": "dataset : CLICR"
+  },
+  {
+   "Paragraph": "The QA dataset of BIOASQ (Tsatsaronis et al., 2015) contains questions written by biomedical experts. The gold answers comprise multiple relevant documents per question, relevant snippets from the documents, exact answers in the form of entities, as well as reference summaries, written by the ex- perts. Creating data of this kind, however, requires significant expertise and time. In the eight years of BIOASQ, only 3,243 questions and gold answers have been created. It would be particularly interesting to explore if larger automatically generated datasets like BIOMRC and CLICR could be used to pre-train models, which could then be fine-tuned for human-generated QA or MRC datasets.",
+   "Candidates": "[dataset] : dataset | [dataset] : BioASQ | [dataset] : data | [dataset] : KIND | [dataset] : datasets | [dataset] : BIOMRC | [dataset] : CliCR | [software] : models",
+   "Results": "dataset : BIOASQ"
+  },
+  {
+   "Paragraph": "Outside the biomedical domain, several clozestyle open-domain MRC datasets have been created automatically (Hill et al., 2016;Hermann et al., 2015;Dunn et al., 2017;Bajgar et al., 2016), but have been criticized of containing questions that can be answered by simple heuristics like our basic baselines (Chen et al., 2016). There are also several large open-domain MRC datasets annotated by humans (Kwiatkowski et al., 2019;Rajpurkar et al., 2016Rajpurkar et al., , 2018;;Trischler et al., 2017;Nguyen et al., 2016;Lai et al., 2017). To our knowledge the biggest human annotated corpus is Google's Natural Questions dataset (Kwiatkowski et al., 2019), with approximately 300k human annotated examples. Datasets of this kind require extensive annotation effort, which for open-domain datasets is usually crowd-sourced. Crowd-sourcing, however, is much more difficult for biomedical datasets, because of the required expertise of the annotators.",
+   "Candidates": "[dataset] : datasets | [dataset] : corpus | [dataset] : Google | [dataset] : Natural Questions | [dataset] : dataset | [dataset] : KIND",
+   "Results": "dataset : Google's Natural Questions"
+  },
+  {
+   "Paragraph": "We introduced BIOMRC, a large-scale cloze-style biomedical MRC dataset. Care was taken to reduce noise, compared to the previous BIOREAD dataset of Pappas et al. (2018). Experiments showed that BIOMRC's questions cannot be answered well by simple heuristics, and that two neural MRC models that had been tested on BIOREAD perform much better on BIOMRC, indicating that the new dataset is indeed less noisy or at least that its task is more feasible. Human performance was also higher on a sample of BIOMRC compared to BIOREAD, and biomedical experts performed even better. We also developed a new BERT-based model, the best version of which outperformed all other meth-ods tested, reaching or surpassing the accuracy of biomedical experts in some experiments. We make BIOMRC available in three different sizes, also releasing our code, and providing a leaderboard.",
+   "Candidates": "[dataset] : BIOMRC | [dataset] : dataset | [software] : models | [software] : BERT | [software] : model",
+   "Results": "dataset : BIOMRC"
+  },
+  {
+   "Paragraph": "We plan to tune more extensively the BERTbased model to further improve its efficiency, and to investigate if some of its techniques (mostly its max-aggregation, but also using sub-tokens) can also benefit the other neural models we considered. We also plan to experiment with other MRC models that recently performed particularly well on opendomain MRC datasets (Zhang et al., 2020). Finally, we aim to explore if pre-training neural models on BIOREAD is beneficial in human-generated biomedical datasets (Tsatsaronis et al., 2015).",
+   "Candidates": "[software] : model | [software] : techniques | [software] : models | [dataset] : datasets",
+   "Results": "software : BERT"
+  },
+  {
+   "Paragraph": "Figure 2: Illustration of our SCIBERT-based models.Each sentence of the passage is concatenated with the question and fed to SCIBERT. The top-level embedding produced by SCIBERT for the first sub-token of each candidate answer is concatenated with the toplevel embedding of[MASK]  (which replaces the placeholder XXXX) of the question, and they are fed to an MLP, which produces the score of the candidate answer. In SCIBERT-SUM-READER, the scores of multiple occurrences of the same candidate are summed, whereas SCIBERT-MAX-READER takes their maximum.",
+   "Candidates": "[software] : models | [dataset] : FED | [dataset] : MLP | [dataset] : SUM",
+   "Results": "software : SCIBERT"
+  },
+  {
+   "Paragraph": "Figure 3: More detailed statistics and results on the development subset of BIOMRC LITE. Number of passagequestion instances with 2, 3, . . . , 20 candidate answers (top left). Accuracy (%) of the basic baselines (top right).(%) of the neural models in Settings A (bottom left) and B (bottom right).",
+   "Candidates": "[dataset] : BIOMRC | [software] : models",
+   "Results": "software : BIOMRC LITE"
+  },
+  {
+   "Paragraph": "c samuni y. ; samuni u. ; goldstein s. the use of cyclic XXXX as hno scavengers .\" 'passage' containing captions: \"figure 2: distal UNK showing high insertion of rectum into common channel. figure 3: illustration of the cloacal malformation. figure 4: @entity5 showing UNK\"",
+   "Candidates": "[software] : USE",
+   "Results": "N/A"
+  },
+  {
+   "Paragraph": "Examples of noisy BIOREAD data. XXXX is the placeholder, and UNK is the 'unknown' token.",
+   "Candidates": "[dataset] : data",
+   "Results": "dataset : BIOREAD"
+  },
+  {
+   "Paragraph": "Accuracy (%) on BIOMRC TINY. Best human and system scores shown in bold.",
+   "Candidates": "[dataset] : BIOMRC | [software] : system",
+   "Results": "software : BIOMRC TINY"
+  },
+  {
+   "Paragraph": "Human agreement (Cohen's Kappa, %) on BIOMRC TINY. Avg. pairwise scores for non-experts.",
+   "Candidates": "[dataset] : BIOMRC | [software] : NON",
+   "Results": "N/A"
+  },
+  {
+   "Paragraph": "",
+   "Candidates": "",
+   "Results": "N/A"
+  },
+  {
+   "Paragraph": "",
+   "Candidates": "",
+   "Results": "N/A"
+  }
+ ]
+}
