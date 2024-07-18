@@ -66,9 +66,15 @@ with gr.Blocks() as pdf_analysis:
 
     process_pdf_button.click(analyze_pdf, inputs=[pdf_input, fast_mode_toggle, filter_paragraphs_toggle, perform_dedup_toggle, fast_mode_gazetteers_toggle], outputs=[pdf_output])
 
+# Define the interface for the third tab (DOI Mode)
+with gr.Blocks() as doi_mode:
+    gr.Markdown("### SciNoBo RAA - DOI Mode")
+    doi_input = gr.Textbox(label="DOI", placeholder="Enter a valid Digital Object Identifier", interactive=False)
+    gr.HTML("<span style='color:red;'>This functionality is not ready yet.</span>")
+
 # Combine the tabs into one interface
 with gr.Blocks() as demo:
-    gr.TabbedInterface([text_analysis, pdf_analysis], ["Text Mode", "PDF Mode"])
+    gr.TabbedInterface([text_analysis, pdf_analysis, doi_mode], ["Text Mode", "PDF Mode", "DOI Mode"])
 
 # Launch the interface
 demo.queue().launch()
