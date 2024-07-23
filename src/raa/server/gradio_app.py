@@ -1,5 +1,12 @@
+import os
 import gradio as gr
+import requests as req
 from raa.pipeline.inference import extract_research_artifacts_text_list, extract_research_artifacts_text_list_fast_mode, extract_research_artifacts_pdf, extract_research_artifacts_pdf_fast_mode
+
+# Retrieve HF space secrets
+BACKEND_IP = os.getenv('BACKEND_IP')
+BACKEND_PORT = os.getenv('BACKEND_PORT')
+BACKEND_PATH = os.getenv('BACKEND_PATH')
 
 # Define the functions to handle the inputs and outputs
 def analyze_text(snippet, fast_mode, split_sentences, perform_deduplication, insert_fast_mode_gazetteers, progress=gr.Progress(track_tqdm=True)):
@@ -20,6 +27,25 @@ def analyze_pdf(pdf_file, fast_mode, filter_paragraphs, perform_deduplication, i
             results = extract_research_artifacts_pdf_fast_mode(pdf_file)['research_artifacts']
         else:
             results = extract_research_artifacts_pdf(pdf_file, filter_paragraphs=filter_paragraphs, perform_deduplication=perform_deduplication, insert_fast_mode_gazetteers=insert_fast_mode_gazetteers)['research_artifacts']
+    except Exception as e:
+        results = {'error': str(e)}
+    return results
+
+def analyze_input_doi(
+    doi: str | None
+):
+    if (doi is None):
+        results = {'error': 'Please provide the DOI of the publication'}
+        return results
+    if (doi == ''):
+        results = {'error': 'Please provide the DOI of the publication'}
+        return results
+    try:
+        url = f"http://{BACKEND_IP}:{BACKEND_PORT}{BACKEND_PATH}{doi}"
+        response = req.get(url)
+        response.raise_for_status()
+        results = response.json()
+        return results
     except Exception as e:
         results = {'error': str(e)}
     return results
@@ -66,11 +92,13 @@ with gr.Blocks() as pdf_analysis:
 
     process_pdf_button.click(analyze_pdf, inputs=[pdf_input, fast_mode_toggle, filter_paragraphs_toggle, perform_dedup_toggle, fast_mode_gazetteers_toggle], outputs=[pdf_output])
 
-# Define the interface for the third tab (DOI Mode)
+# Define the interface for the second tab (DOI Mode)
 with gr.Blocks() as doi_mode:
-    gr.Markdown("### SciNoBo RAA - DOI Mode")
-    doi_input = gr.Textbox(label="DOI", placeholder="Enter a valid Digital Object Identifier", interactive=False)
-    gr.HTML("<span style='color:red;'>This functionality is not ready yet.</span>")
+    gr.Markdown("### Sustainable Development Goal (SDG) Classifier - DOI Mode")
+    doi_input = gr.Textbox(label="DOI", placeholder="Enter a valid Digital Object Identifier")
+    process_doi_button = gr.Button("Process")
+    doi_output = gr.JSON(label="Output")
+    process_doi_button.click(analyze_input_doi, inputs=[doi_input], outputs=[doi_output])
 
 # Combine the tabs into one interface
 with gr.Blocks() as demo:
