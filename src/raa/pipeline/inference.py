@@ -1624,7 +1624,7 @@ def extract_research_artifacts_list_fast_mode(text_list, research_artifact_gazet
 
 """
 
-RE-EVALUATE FUNCTION
+RE-EVALUATE FUNCTIONS
 
 """
 
@@ -2050,6 +2050,380 @@ def reevaluate(file_path, new_thresholds=None):
     # Save the modified workbook
     wb.save(output_file_simple)
     wb.close()
+
+
+def reevaluate_clusters(grouped_clusters, new_thresholds=None, verbose=False):
+
+    map_cand_type = {
+        'dataset': 'dataset',
+        'software': 'software',
+        'gaz_dataset': 'dataset',
+        'gaz_method': 'software'
+    }
+
+    if new_thresholds is None:
+        new_thresholds = {
+            'artifact_answer': 0.8,
+            'ownership_answer': 0.8,
+            'reuse_answer': 0.8,
+    }
+
+    """ NEW STUFF / THRESHOLDS """
+    from copy import deepcopy
+
+    output_mentions_list = sorted([i3 for s3 in [i2 for s2 in [i for s in [[[grouped_clusters[k][k2][k3] for k3 in grouped_clusters[k][k2]] for k2 in grouped_clusters[k]] for k in grouped_clusters] for i in s] for i2 in s2] for i3 in s3], key=lambda y:int(y[0][1:]))
+    
+    # Apply the new thresholds to the mentions of the research artifacts
+    new_mentions_list = deepcopy(output_mentions_list)
+    to_remove = []
+    for mention in new_mentions_list:
+        if (mention[1]['results']['artifact_answer']['Yes'] >= new_thresholds['artifact_answer']):
+            if (mention[1]['results']['ownership_answer']['Yes'] >= new_thresholds['ownership_answer']):
+                mention[1]['results']['ownership_final_answer'] = 'Yes'
+            else:
+                mention[1]['results']['ownership_final_answer'] = 'No'
+
+            if (mention[1]['results']['reuse_answer']['Yes'] >= new_thresholds['reuse_answer']):
+                mention[1]['results']['reuse_final_answer'] = 'Yes'
+            else:
+                mention[1]['results']['reuse_final_answer'] = 'No'
+        else:
+            to_remove.append(mention)
+    
+    # Remove the mentions that do not meet the new thresholds
+    for mention in to_remove:
+        new_mentions_list.remove(mention)
+    
+    # Cluster again the research artifacts
+    mention_types = set([map_cand_type[x[1]['type']] if x[1]['type'] in map_cand_type else x[1]['type'] for x in new_mentions_list])
+
+    research_artifacts = {}
+    for m_type in mention_types:
+        m_type_mentions = [x for x in new_mentions_list if (map_cand_type[x[1]['type']] if x[1]['type'] in map_cand_type else x[1]['type']) == m_type]
+        research_artifacts[m_type] = deduplicate_mentions_dedup(m_type_mentions, verbose)
+    
+    # Assign the new clusters to the output
+    grouped_clusters = research_artifacts
+
+    """ NEW STUFF / THRESHOLDS -- END """
+
+    # Better "visualize" the research artifacts (print and add to excel)
+    columns = ['RA Cluster', 'Research Artifact', 'Type', 'Research Artifact Score', 'Owned', 'Owned Percentage', 'Owned Score', 'Reused', 'Reused Percentage', 'Reused Score', 'Licenses', 'Versions', 'URLs', 'Citations', 'Mentions Count']
+    df = pd.DataFrame(columns=columns)
+
+    mentions_columns = ['Mention ID', 'RA Cluster', 'Research Artifact', 'Type', 'Research Artifact Score', 'Owned', 'Owned Score', 'Reused', 'Reused Score', 'License', 'Version', 'URLs', 'Citations', 'Section', 'Indices', 'Trigger', 'Mention']
+    mentions_df = pd.DataFrame(columns=mentions_columns)
+
+    for ra_type in grouped_clusters:
+        for ra_cluster in grouped_clusters[ra_type]:
+            for ra_name in grouped_clusters[ra_type][ra_cluster]:
+                # Find research artifact scores
+                ra_scores = [x[1]['results']['artifact_answer']['Yes'] for x in grouped_clusters[ra_type][ra_cluster][ra_name]]
+                mean_ra_score = sum(ra_scores) / len(ra_scores)
+
+                """ NEW STUFF / OWNERSHIP """
+                k = 1
+                valid_onwership_mentions = sorted([x for x in grouped_clusters[ra_type][ra_cluster][ra_name] if is_valid_section_title(x[1]['section_title'])], key=lambda y: (y[1]['indices'][0], y[1]['indices'][1], y[1]['indices'][2], int(y[0][1:])))[:k]
+                ownership_counter = Counter([x[1]['results']['ownership_final_answer'] for x in valid_onwership_mentions])
+                """ NEW STUFF / OWNERSHIP -- END """
+
+                # reuse_counter = Counter([sorted(x[1]['results']['reuse_answer'], key=lambda y: x[1]['results']['reuse_answer'][y], reverse=True)[0] for x in grouped_clusters[ra_type][ra_cluster][ra_name]])  # TODO: THIS WAS A BUG IN DTH -- PLEASE INFER AGAIN
+                reuse_counter = Counter([x[1]['results']['reuse_final_answer'] for x in grouped_clusters[ra_type][ra_cluster][ra_name]])
+
+                owned = 'Yes' if 'Yes' in ownership_counter else 'No'
+                owned_percentage = ownership_counter['Yes'] / len(grouped_clusters[ra_type][ra_cluster][ra_name]) * 100
+                reused = 'Yes' if 'Yes' in reuse_counter else 'No'
+                reused_percentage = reuse_counter['Yes'] / len(grouped_clusters[ra_type][ra_cluster][ra_name]) * 100
+                owned_scores = [x[1]['results']['ownership_answer']['Yes'] for x in grouped_clusters[ra_type][ra_cluster][ra_name] if sorted(x[1]['results']['ownership_answer'], key=lambda y: x[1]['results']['ownership_answer'][y], reverse=True)[0]=='Yes']
+                mean_owned_score = sum(owned_scores) / len(owned_scores) if owned_scores else 0
+                reused_scores = [x[1]['results']['reuse_answer']['Yes'] for x in grouped_clusters[ra_type][ra_cluster][ra_name] if sorted(x[1]['results']['reuse_answer'], key=lambda y: x[1]['results']['reuse_answer'][y], reverse=True)[0]=='Yes']
+                mean_reused_score = sum(reused_scores) / len(reused_scores) if reused_scores else 0
+
+                # Find licenses
+                license_counter = Counter([x[1]['results']['license_answer'] for x in grouped_clusters[ra_type][ra_cluster][ra_name] if x[1]['results']['license_answer']!='N/A'])
+                # Find the percentage of each license
+                all_licenses_count = sum(license_counter.values())
+                all_licenses = [[license, license_counter[license] / all_licenses_count * 100] for license in license_counter]
+
+                # Find versions
+                version_counter = Counter([x[1]['results']['version_answer'] for x in grouped_clusters[ra_type][ra_cluster][ra_name] if x[1]['results']['version_answer']!='N/A'])
+                # Find the percentage of each version
+                all_versions_count = sum(version_counter.values())
+                all_versions = [[version, version_counter[version] / all_versions_count * 100] for version in version_counter]
+
+                # Find URLs
+                urls = Counter([i for s in [x[1]['urls'] for x in grouped_clusters[ra_type][ra_cluster][ra_name] if x[1]['urls']] for i in s])
+                # Find the percentage of each URL
+                all_urls_count = sum(urls.values())
+                all_urls = [[url, urls[url] / all_urls_count * 100] for url in urls]
+
+                # Find Citations
+                citations = Counter([i2 for s2 in [i for s in [x[1]['citations'] for x in grouped_clusters[ra_type][ra_cluster][ra_name] if x[1]['citations']] for i in s] for i2 in s2])
+                # Find the percentage of each citation
+                all_citations_count = sum(citations.values())
+                all_citations = [[citation, citations[citation] / all_citations_count * 100] for citation in citations]
+
+                # Find mentions
+                mentions = [
+                    [
+                        x[1]['snippet'][:x[1]['trigger_offset'][0]] + '<m>' + x[1]['snippet'][x[1]['trigger_offset'][0]:x[1]['trigger_offset'][1]] + '</m>' + x[1]['snippet'][x[1]['trigger_offset'][1]:], 
+                        x[0],
+                        # map_cand_type[x[1]['type']],
+                        x[1]['type'],
+                        x[1]['results']['artifact_answer']['Yes'],
+                        'Yes' if sorted(x[1]['results']['ownership_answer'], key=lambda y: x[1]['results']['ownership_answer'][y], reverse=True)[0]=='Yes' else 'No',
+                        x[1]['results']['ownership_answer']['Yes'],
+                        'Yes' if sorted(x[1]['results']['reuse_answer'], key=lambda y: x[1]['results']['reuse_answer'][y], reverse=True)[0]=='Yes' else 'No',
+                        x[1]['results']['reuse_answer']['Yes'],
+                        '' if x[1]['results']['license_answer']=='N/A' else x[1]['results']['license_answer'],
+                        '' if x[1]['results']['version_answer']=='N/A' else x[1]['results']['version_answer'],
+                        "\n".join(x[1]['urls']),
+                        "\n".join(sorted(set([i for s in x[1]['citations'] for i in s]))),
+                        x[1]['section_title'],
+                        tuple(x[1]['indices']),
+                        x[1]['trigger'],
+                    ] for x in grouped_clusters[ra_type][ra_cluster][ra_name]]
+                mentions_count = len(mentions)
+
+                ra_cluster_name = ra_type+'_'+'_'.join(ra_cluster.split('_')[1:]) if ra_cluster != 'Unnamed' else ra_type+'_unnamed'
+
+                # Append a row to the DataFrame
+                row_data = [ra_cluster_name, ra_name, ra_type, mean_ra_score, owned, owned_percentage, mean_owned_score, reused, reused_percentage, mean_reused_score,
+                            "\n".join([f"{license} ({percentage}%)" for license, percentage in all_licenses]),
+                            "\n".join([f"{version} ({percentage}%)" for version, percentage in all_versions]),
+                            "\n".join([f"{url} ({percentage}%)" for url, percentage in all_urls]),
+                            "\n".join([f"{citation} ({percentage}%)" for citation, percentage in all_citations]),
+                            mentions_count]
+
+                row_series = pd.Series(row_data, index=columns)
+                df = pd.concat([df, row_series.to_frame().T], ignore_index=True)
+
+                # Add mentions to the mentions DataFrame
+                for mention in mentions:
+                    mentions_row_data = [mention[1], ra_cluster_name, ra_name, mention[2], mention[3], mention[4], mention[5], mention[6], mention[7], mention[8], mention[9], mention[10], mention[11], mention[12], mention[13], mention[14], mention[0]]
+                    mentions_row_series = pd.Series(mentions_row_data, index=mentions_columns)
+                    mentions_df = pd.concat([mentions_df, mentions_row_series.to_frame().T], ignore_index=True)
+
+    # Save the reevaluated JSON to a file
+    res = {
+            'research_artifacts': df.to_dict('records'),
+            'mentions': mentions_df.to_dict('records'),
+        }
+    
+    return res
+
+
+def convert_mentions_to_table(mentions, text_mode=False, return_df=False):
+    all_mentions = [[x, mentions[x]] for x in mentions]
+    if text_mode:
+        mentions_columns = ['Mention ID', 'Research Artifact', 'Type', 'Research Artifact Score', 'Owned', 'Owned Score', 'Reused', 'Reused Score', 'License', 'Version', 'URLs', 'Citations', 'Indices', 'Trigger', 'Mention']
+    else:    
+        mentions_columns = ['Mention ID', 'Research Artifact', 'Type', 'Research Artifact Score', 'Owned', 'Owned Score', 'Reused', 'Reused Score', 'License', 'Version', 'URLs', 'Citations', 'Section', 'Indices', 'Trigger', 'Mention']
+    mentions_df = pd.DataFrame(columns=mentions_columns)
+
+    # Find mentions
+    if text_mode:
+        mentions = [
+            [
+                x[1]['snippet'][:x[1]['trigger_offset'][0]] + '<m>' + x[1]['snippet'][x[1]['trigger_offset'][0]:x[1]['trigger_offset'][1]] + '</m>' + x[1]['snippet'][x[1]['trigger_offset'][1]:], 
+                x[0],
+                # map_cand_type[x[1]['type']],
+                x[1]['type'],
+                x[1]['results']['artifact_answer']['Yes'],
+                'Yes' if sorted(x[1]['results']['ownership_answer'], key=lambda y: x[1]['results']['ownership_answer'][y], reverse=True)[0]=='Yes' else 'No',
+                x[1]['results']['ownership_answer']['Yes'],
+                'Yes' if sorted(x[1]['results']['reuse_answer'], key=lambda y: x[1]['results']['reuse_answer'][y], reverse=True)[0]=='Yes' else 'No',
+                x[1]['results']['reuse_answer']['Yes'],
+                '' if x[1]['results']['license_answer']=='N/A' else x[1]['results']['license_answer'],
+                '' if x[1]['results']['version_answer']=='N/A' else x[1]['results']['version_answer'],
+                '\n'.join(find_urls(x[1]['snippet'])),
+                "\n".join(sorted(set([i for s in x[1]['citations'] for i in s]))),
+                tuple(x[1]['indices']),
+                x[1]['trigger'],
+                x[1]['results']['name_answer'] if 'name_answer' in x[1]['results'] and x[1]['results']['name_answer'] != 'N/A' else 'Unnamed',
+            ] for x in all_mentions]
+    else:
+        mentions = [
+            [
+                x[1]['snippet'][:x[1]['trigger_offset'][0]] + '<m>' + x[1]['snippet'][x[1]['trigger_offset'][0]:x[1]['trigger_offset'][1]] + '</m>' + x[1]['snippet'][x[1]['trigger_offset'][1]:], 
+                x[0],
+                # map_cand_type[x[1]['type']],
+                x[1]['type'],
+                x[1]['results']['artifact_answer']['Yes'],
+                'Yes' if sorted(x[1]['results']['ownership_answer'], key=lambda y: x[1]['results']['ownership_answer'][y], reverse=True)[0]=='Yes' else 'No',
+                x[1]['results']['ownership_answer']['Yes'],
+                'Yes' if sorted(x[1]['results']['reuse_answer'], key=lambda y: x[1]['results']['reuse_answer'][y], reverse=True)[0]=='Yes' else 'No',
+                x[1]['results']['reuse_answer']['Yes'],
+                '' if x[1]['results']['license_answer']=='N/A' else x[1]['results']['license_answer'],
+                '' if x[1]['results']['version_answer']=='N/A' else x[1]['results']['version_answer'],
+                "\n".join(x[1]['urls']),
+                "\n".join(sorted(set([i for s in x[1]['citations'] for i in s]))),
+                x[1]['section_title'],
+                tuple(x[1]['indices']),
+                x[1]['trigger'],
+                x[1]['results']['name_answer'] if 'name_answer' in x[1]['results'] and x[1]['results']['name_answer'] != 'N/A' else 'Unnamed',
+            ] for x in all_mentions]
+    
+    # Add mentions to the mentions DataFrame
+    for mention in mentions:
+        if text_mode:
+            mentions_row_data = [mention[1], mention[14], mention[2], mention[3], mention[4], mention[5], mention[6], mention[7], mention[8], mention[9], mention[10], mention[11], mention[12], mention[13], mention[0]]
+        else:
+            mentions_row_data = [mention[1], mention[15], mention[2], mention[3], mention[4], mention[5], mention[6], mention[7], mention[8], mention[9], mention[10], mention[11], mention[12], mention[13], mention[14], mention[0]]
+        mentions_row_series = pd.Series(mentions_row_data, index=mentions_columns)
+        mentions_df = pd.concat([mentions_df, mentions_row_series.to_frame().T], ignore_index=True)
+
+    if return_df:
+        # Return the DataFrames
+        return mentions_df
+    else:
+        # Return the reevaluated JSON
+        res = {
+                'mentions': mentions_df.to_dict('records'),
+            }
+        return res
+    
+
+def convert_clusters_to_tables(grouped_clusters, text_mode=False, return_df=False):
+    columns = ['RA Cluster', 'Research Artifact', 'Type', 'Research Artifact Score', 'Owned', 'Owned Percentage', 'Owned Score', 'Reused', 'Reused Percentage', 'Reused Score', 'Licenses', 'Versions', 'URLs', 'Citations', 'Mentions Count']
+    df = pd.DataFrame(columns=columns)
+
+    if text_mode:
+        mentions_columns = ['Mention ID', 'RA Cluster', 'Research Artifact', 'Type', 'Research Artifact Score', 'Owned', 'Owned Score', 'Reused', 'Reused Score', 'License', 'Version', 'URLs', 'Citations', 'Indices', 'Trigger', 'Mention']
+    else:    
+        mentions_columns = ['Mention ID', 'RA Cluster', 'Research Artifact', 'Type', 'Research Artifact Score', 'Owned', 'Owned Score', 'Reused', 'Reused Score', 'License', 'Version', 'URLs', 'Citations', 'Section', 'Indices', 'Trigger', 'Mention']
+    mentions_df = pd.DataFrame(columns=mentions_columns)
+
+    for ra_type in grouped_clusters:
+        for ra_cluster in grouped_clusters[ra_type]:
+            for ra_name in grouped_clusters[ra_type][ra_cluster]:
+                # Find research artifact scores
+                ra_scores = [x[1]['results']['artifact_answer']['Yes'] for x in grouped_clusters[ra_type][ra_cluster][ra_name]]
+                mean_ra_score = sum(ra_scores) / len(ra_scores)
+
+                """ NEW STUFF / OWNERSHIP """
+                k = 1
+                if text_mode:
+                    valid_onwership_mentions = sorted([x for x in grouped_clusters[ra_type][ra_cluster][ra_name]], key=lambda y: (y[1]['indices'][0], y[1]['indices'][1], int(y[0][1:])))[:k]
+                else:
+                    valid_onwership_mentions = sorted([x for x in grouped_clusters[ra_type][ra_cluster][ra_name] if is_valid_section_title(x[1]['section_title'])], key=lambda y: (y[1]['indices'][0], y[1]['indices'][1], y[1]['indices'][2], int(y[0][1:])))[:k]
+                ownership_counter = Counter([x[1]['results']['ownership_final_answer'] if 'ownership_final_answer' in x[1]['results'] else x[1]['results']['ownership_answer_text'] for x in valid_onwership_mentions])
+                """ NEW STUFF / OWNERSHIP -- END """
+
+                reuse_counter = Counter([x[1]['results']['reuse_final_answer'] if 'reuse_final_answer' in x[1]['results'] else x[1]['results']['reuse_answer_text'] for x in grouped_clusters[ra_type][ra_cluster][ra_name]])
+
+                owned = 'Yes' if 'Yes' in ownership_counter else 'No'
+                owned_percentage = ownership_counter['Yes'] / len(grouped_clusters[ra_type][ra_cluster][ra_name]) * 100
+                reused = 'Yes' if 'Yes' in reuse_counter else 'No'
+                reused_percentage = reuse_counter['Yes'] / len(grouped_clusters[ra_type][ra_cluster][ra_name]) * 100
+                owned_scores = [x[1]['results']['ownership_answer']['Yes'] for x in grouped_clusters[ra_type][ra_cluster][ra_name] if sorted(x[1]['results']['ownership_answer'], key=lambda y: x[1]['results']['ownership_answer'][y], reverse=True)[0]=='Yes']
+                mean_owned_score = sum(owned_scores) / len(owned_scores) if owned_scores else 0
+                reused_scores = [x[1]['results']['reuse_answer']['Yes'] for x in grouped_clusters[ra_type][ra_cluster][ra_name] if sorted(x[1]['results']['reuse_answer'], key=lambda y: x[1]['results']['reuse_answer'][y], reverse=True)[0]=='Yes']
+                mean_reused_score = sum(reused_scores) / len(reused_scores) if reused_scores else 0
+
+                # Find licenses
+                license_counter = Counter([x[1]['results']['license_answer'] for x in grouped_clusters[ra_type][ra_cluster][ra_name] if x[1]['results']['license_answer']!='N/A'])
+                # Find the percentage of each license
+                all_licenses_count = sum(license_counter.values())
+                all_licenses = [[license, license_counter[license] / all_licenses_count * 100] for license in license_counter]
+
+                # Find versions
+                version_counter = Counter([x[1]['results']['version_answer'] for x in grouped_clusters[ra_type][ra_cluster][ra_name] if x[1]['results']['version_answer']!='N/A'])
+                # Find the percentage of each version
+                all_versions_count = sum(version_counter.values())
+                all_versions = [[version, version_counter[version] / all_versions_count * 100] for version in version_counter]
+
+                # Find URLs
+                if text_mode:
+                    urls = Counter([i for s in [find_urls(x[1]['snippet']) for x in grouped_clusters[ra_type][ra_cluster][ra_name]] for i in s])
+                else:
+                    urls = Counter([i for s in [x[1]['urls'] for x in grouped_clusters[ra_type][ra_cluster][ra_name] if x[1]['urls']] for i in s])
+                # Find the percentage of each URL
+                all_urls_count = sum(urls.values())
+                all_urls = [[url, urls[url] / all_urls_count * 100] for url in urls]
+
+                # Find Citations
+                citations = Counter([i2 for s2 in [i for s in [x[1]['citations'] for x in grouped_clusters[ra_type][ra_cluster][ra_name] if x[1]['citations']] for i in s] for i2 in s2])
+                # Find the percentage of each citation
+                all_citations_count = sum(citations.values())
+                all_citations = [[citation, citations[citation] / all_citations_count * 100] for citation in citations]
+
+                # Find mentions
+                if text_mode:
+                    mentions = [
+                        [
+                            x[1]['snippet'][:x[1]['trigger_offset'][0]] + '<m>' + x[1]['snippet'][x[1]['trigger_offset'][0]:x[1]['trigger_offset'][1]] + '</m>' + x[1]['snippet'][x[1]['trigger_offset'][1]:], 
+                            x[0],
+                            # map_cand_type[x[1]['type']],
+                            x[1]['type'],
+                            x[1]['results']['artifact_answer']['Yes'],
+                            'Yes' if sorted(x[1]['results']['ownership_answer'], key=lambda y: x[1]['results']['ownership_answer'][y], reverse=True)[0]=='Yes' else 'No',
+                            x[1]['results']['ownership_answer']['Yes'],
+                            'Yes' if sorted(x[1]['results']['reuse_answer'], key=lambda y: x[1]['results']['reuse_answer'][y], reverse=True)[0]=='Yes' else 'No',
+                            x[1]['results']['reuse_answer']['Yes'],
+                            '' if x[1]['results']['license_answer']=='N/A' else x[1]['results']['license_answer'],
+                            '' if x[1]['results']['version_answer']=='N/A' else x[1]['results']['version_answer'],
+                            '\n'.join(find_urls(x[1]['snippet'])),
+                            "\n".join(sorted(set([i for s in x[1]['citations'] for i in s]))),
+                            tuple(x[1]['indices']),
+                            x[1]['trigger'],
+                        ] for x in grouped_clusters[ra_type][ra_cluster][ra_name]]
+                else:
+                    mentions = [
+                        [
+                            x[1]['snippet'][:x[1]['trigger_offset'][0]] + '<m>' + x[1]['snippet'][x[1]['trigger_offset'][0]:x[1]['trigger_offset'][1]] + '</m>' + x[1]['snippet'][x[1]['trigger_offset'][1]:], 
+                            x[0],
+                            # map_cand_type[x[1]['type']],
+                            x[1]['type'],
+                            x[1]['results']['artifact_answer']['Yes'],
+                            'Yes' if sorted(x[1]['results']['ownership_answer'], key=lambda y: x[1]['results']['ownership_answer'][y], reverse=True)[0]=='Yes' else 'No',
+                            x[1]['results']['ownership_answer']['Yes'],
+                            'Yes' if sorted(x[1]['results']['reuse_answer'], key=lambda y: x[1]['results']['reuse_answer'][y], reverse=True)[0]=='Yes' else 'No',
+                            x[1]['results']['reuse_answer']['Yes'],
+                            '' if x[1]['results']['license_answer']=='N/A' else x[1]['results']['license_answer'],
+                            '' if x[1]['results']['version_answer']=='N/A' else x[1]['results']['version_answer'],
+                            "\n".join(x[1]['urls']),
+                            "\n".join(sorted(set([i for s in x[1]['citations'] for i in s]))),
+                            x[1]['section_title'],
+                            tuple(x[1]['indices']),
+                            x[1]['trigger'],
+                        ] for x in grouped_clusters[ra_type][ra_cluster][ra_name]]
+                
+                mentions_count = len(mentions)
+
+                ra_cluster_name = ra_type+'_'+'_'.join(ra_cluster.split('_')[1:]) if ra_cluster != 'Unnamed' else ra_type+'_unnamed'
+
+                # Append a row to the DataFrame
+                row_data = [ra_cluster_name, ra_name, ra_type, mean_ra_score, owned, owned_percentage, mean_owned_score, reused, reused_percentage, mean_reused_score,
+                            "\n".join([f"{license} ({percentage}%)" for license, percentage in all_licenses]),
+                            "\n".join([f"{version} ({percentage}%)" for version, percentage in all_versions]),
+                            "\n".join([f"{url} ({percentage}%)" for url, percentage in all_urls]),
+                            "\n".join([f"{citation} ({percentage}%)" for citation, percentage in all_citations]),
+                            mentions_count]
+
+                row_series = pd.Series(row_data, index=columns)
+                df = pd.concat([df, row_series.to_frame().T], ignore_index=True)
+
+                # Add mentions to the mentions DataFrame
+                for mention in mentions:
+                    if text_mode:
+                        mentions_row_data = [mention[1], ra_cluster_name, ra_name, mention[2], mention[3], mention[4], mention[5], mention[6], mention[7], mention[8], mention[9], mention[10], mention[11], mention[12], mention[13], mention[0]]
+                    else:
+                        mentions_row_data = [mention[1], ra_cluster_name, ra_name, mention[2], mention[3], mention[4], mention[5], mention[6], mention[7], mention[8], mention[9], mention[10], mention[11], mention[12], mention[13], mention[14], mention[0]]
+                    mentions_row_series = pd.Series(mentions_row_data, index=mentions_columns)
+                    mentions_df = pd.concat([mentions_df, mentions_row_series.to_frame().T], ignore_index=True)
+
+    if return_df:
+        # Return the DataFrames
+        return df, mentions_df
+    else:
+        # Return the reevaluated JSON
+        res = {
+                'research_artifacts': df.to_dict('records'),
+                'mentions': mentions_df.to_dict('records'),
+            }
+        return res
+
 
 """ 
 
