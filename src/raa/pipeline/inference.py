@@ -2179,76 +2179,47 @@ def extract_research_artifacts_parquet_file_fast_mode(input_path, dataset_gazett
     return all_outputs
 
 
-def extract_research_artifacts_parquet_file(input_path, filter_paragraphs=True, perform_deduplication=True, insert_fast_mode_gazetteers=False, dataset_gazetteers=None, verbose=True):
-    # Load the parquet file
-    parquet_data = pd.read_parquet(input_path)
-
-    # Each parquet file contains multiple papers (each paper is a row)
-    # so we need to iterate over each paper
-    all_outputs = []
-    if verbose:
-        parquet_iter = tqdm(parquet_data.to_dict('records'))
+def extract_research_artifacts_doimode(data, filter_paragraphs=True, perform_deduplication=True, insert_fast_mode_gazetteers=False, dataset_gazetteers=None, verbose=True):
+    pdf_metadata = {
+        'id': data['doi'],
+        'sections': data['sections']
+    }
+    if perform_deduplication:
+        # Extract research artifacts
+        candidates_metadata, grouped_clusters = extract_research_artifacts_pipeline(pdf_metadata, filter_paragraphs=filter_paragraphs, perform_deduplication=perform_deduplication, insert_fast_mode_gazetteers=insert_fast_mode_gazetteers, dataset_gazetteers=dataset_gazetteers, verbose=verbose)
     else:
-        parquet_iter = parquet_data.to_dict('records')
-    for row in parquet_iter:
-        pdf_metadata = {
-            'id': row['id'],
-            'sections': eval(row['sections'])
+        # Extract research artifacts
+        candidates_metadata = extract_research_artifacts_pipeline(pdf_metadata, perform_deduplication=perform_deduplication, insert_fast_mode_gazetteers=insert_fast_mode_gazetteers, dataset_gazetteers=dataset_gazetteers, verbose=verbose)
+        grouped_clusters = None
+
+    # Output the results
+    output = {
+        'doi': data['doi'],
+        'pdf_metadata': pdf_metadata,
+        'research_artifacts': {
+            'candidates_metadata': candidates_metadata,
+            'grouped_clusters': grouped_clusters
         }
-        if perform_deduplication:
-            # Extract research artifacts
-            candidates_metadata, grouped_clusters = extract_research_artifacts_pipeline(pdf_metadata, filter_paragraphs=filter_paragraphs, perform_deduplication=perform_deduplication, insert_fast_mode_gazetteers=insert_fast_mode_gazetteers, dataset_gazetteers=dataset_gazetteers, verbose=verbose)
-        else:
-            # Extract research artifacts
-            candidates_metadata = extract_research_artifacts_pipeline(pdf_metadata, perform_deduplication=perform_deduplication, insert_fast_mode_gazetteers=insert_fast_mode_gazetteers, dataset_gazetteers=dataset_gazetteers, verbose=verbose)
-            grouped_clusters = None
+    }
 
-        # Output the results
-        output = {
-            'input_path': input_path,
-            'pdf_metadata': pdf_metadata,
-            'research_artifacts': {
-                'candidates_metadata': candidates_metadata,
-                'grouped_clusters': grouped_clusters
-            }
-        }
-
-        # Add the output to the list of outputs
-        all_outputs.append(output)
-
-    return all_outputs
+    return output
 
 
-def extract_research_artifacts_parquet_file_fast_mode(input_path, dataset_gazetteers=None, verbose=True):
-    # Load the parquet file
-    parquet_data = pd.read_parquet(input_path)
+def extract_research_artifacts_doimode_fast_mode(data, dataset_gazetteers=None, verbose=True):
+    pdf_metadata = {
+        'id': data['doi'],
+        'sections': data['sections']
+    }
+    research_artifacts = extract_research_artifacts_fast_mode(pdf_metadata, dataset_gazetteers=dataset_gazetteers, verbose=verbose)
 
-    # Each parquet file contains multiple papers (each paper is a row)
-    # so we need to iterate over each paper
-    all_outputs = []
-    if verbose:
-        parquet_iter = tqdm(parquet_data.to_dict('records'))
-    else:
-        parquet_iter = parquet_data.to_dict('records')
-    
-    for row in parquet_iter:
-        pdf_metadata = {
-            'id': row['id'],
-            'sections': eval(row['sections'])
-        }
-        research_artifacts = extract_research_artifacts_fast_mode(pdf_metadata, dataset_gazetteers=dataset_gazetteers, verbose=verbose)
+    # Output the results
+    output = {
+        'doi': data['doi'],
+        'pdf_metadata': pdf_metadata,
+        'research_artifacts': research_artifacts
+    }
 
-        # Output the results
-        output = {
-            'input_path': input_path,
-            'pdf_metadata': pdf_metadata,
-            'research_artifacts': research_artifacts
-        }
-
-        # Add the output to the list of outputs
-        all_outputs.append(output)
-
-    return all_outputs
+    return output
 
 
 def extract_research_artifacts_text_file(input_path, split_sentences=False, perform_deduplication=True, insert_fast_mode_gazetteers=False, dataset_gazetteers=None, verbose=True):

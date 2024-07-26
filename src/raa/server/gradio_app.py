@@ -1,7 +1,9 @@
 import os
 import gradio as gr
 import requests as req
-from raa.pipeline.inference import extract_research_artifacts_text_list, extract_research_artifacts_text_list_fast_mode, extract_research_artifacts_pdf, extract_research_artifacts_pdf_fast_mode
+from raa.pipeline.inference import extract_research_artifacts_text_list, extract_research_artifacts_text_list_fast_mode, \
+                                   extract_research_artifacts_pdf, extract_research_artifacts_pdf_fast_mode, \
+                                   extract_research_artifacts_doimode, extract_research_artifacts_doimode_fast_mode
 
 # Retrieve HF space secrets
 BACKEND_IP = os.getenv('BACKEND_IP')
@@ -31,9 +33,7 @@ def analyze_pdf(pdf_file, fast_mode, filter_paragraphs, perform_deduplication, i
         results = {'error': str(e)}
     return results
 
-def analyze_input_doi(
-    doi: str | None
-):
+def analyze_input_doi(doi: str | None, fast_mode, filter_paragraphs, perform_deduplication, insert_fast_mode_gazetteers, progress=gr.Progress(track_tqdm=True)):
     if (doi is None):
         results = {'error': 'Please provide the DOI of the publication'}
         return results
@@ -44,8 +44,27 @@ def analyze_input_doi(
         url = f"http://{BACKEND_IP}:{BACKEND_PORT}{BACKEND_PATH}{doi}"
         response = req.get(url)
         response.raise_for_status()
-        results = response.json()
-        return results
+
+        # Get the data
+        data = response.json()
+
+        # Move the 'Abstract' in the 'sections' list to the first position
+        if data['sections'][-1][0] == 'Abstract':
+            data['sections'].insert(0, data['sections'].pop())
+        
+        # Call the function to extract the research artifacts
+        if fast_mode:
+            results = extract_research_artifacts_doimode_fast_mode(data)['research_artifacts']
+        else:
+            results = extract_research_artifacts_doimode(data, filter_paragraphs=filter_paragraphs, perform_deduplication=perform_deduplication, insert_fast_mode_gazetteers=insert_fast_mode_gazetteers)['research_artifacts']
+
+        response = {
+            'doi': data['doi'],
+            'sections': data['sections'],
+            'research_artifacts': results
+        }
+
+        return response
     except Exception as e:
         results = {'error': str(e)}
     return results
@@ -96,9 +115,22 @@ with gr.Blocks() as pdf_analysis:
 with gr.Blocks() as doi_mode:
     gr.Markdown("### Sustainable Development Goal (SDG) Classifier - DOI Mode")
     doi_input = gr.Textbox(label="DOI", placeholder="Enter a valid Digital Object Identifier")
+    fast_mode_toggle = gr.Checkbox(label="Fast Mode", value=False, interactive=True)
+    filter_paragraphs_toggle = gr.Checkbox(label="Filter Paragraphs", value=True, interactive=True)
+    perform_dedup_toggle = gr.Checkbox(label="Perform Deduplication", value=True, interactive=True)
+    fast_mode_gazetteers_toggle = gr.Checkbox(label="Insert Fast Mode Gazetteers", value=False, interactive=True)
     process_doi_button = gr.Button("Process")
     doi_output = gr.JSON(label="Output")
-    process_doi_button.click(analyze_input_doi, inputs=[doi_input], outputs=[doi_output])
+
+    def update_visibility(fast_mode_toggle):
+        if fast_mode_toggle:
+            return gr.update(visible=False), gr.update(visible=False), gr.update(visible=False)
+        else:
+            return gr.update(visible=True), gr.update(visible=True), gr.update(visible=True)
+
+    fast_mode_toggle.change(update_visibility, inputs=[fast_mode_toggle], outputs=[filter_paragraphs_toggle, perform_dedup_toggle, fast_mode_gazetteers_toggle])
+
+    process_doi_button.click(analyze_input_doi, inputs=[doi_input, fast_mode_toggle, filter_paragraphs_toggle, perform_dedup_toggle, fast_mode_gazetteers_toggle], outputs=[doi_output])
 
 # Combine the tabs into one interface
 with gr.Blocks() as demo:
