@@ -142,7 +142,7 @@ with gr.Blocks() as pdf_analysis:
 
 # Define the interface for the second tab (DOI Mode)
 with gr.Blocks() as doi_mode:
-    gr.Markdown("### Sustainable Development Goal (SDG) Classifier - DOI Mode")
+    gr.Markdown("### SciNoBo RAA - DOI Mode")
     doi_input = gr.Textbox(label="DOI", placeholder="Enter a valid Digital Object Identifier")
     fast_mode_toggle = gr.Checkbox(label="Fast Mode", value=False, interactive=True)
     filter_paragraphs_toggle = gr.Checkbox(label="Filter Paragraphs", value=True, interactive=True)
