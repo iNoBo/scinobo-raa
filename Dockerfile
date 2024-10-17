@@ -7,9 +7,15 @@ WORKDIR /app
 # Copy only the requirements file, to cache the installation of dependencies
 COPY requirements.txt /app/requirements.txt
 
+# Copy files
+COPY download_model.py /app
+
 # COPY DESCRIPTIONS
 # install dependencies
 RUN pip install -r requirements.txt
+
+# Run the download
+RUN python /app/download_model.py
 
 # Download everything from NLTK
 RUN python -m nltk.downloader punkt
