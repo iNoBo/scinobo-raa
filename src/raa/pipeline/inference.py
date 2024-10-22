@@ -748,6 +748,9 @@ def deduplicate_mentions_dedup(mentions):
             to_rename[cluster] = 'Unnamed_{}'.format(un_c)
             un_c += 1
     for k in to_rename:
+        # Check if we try to rename to a name that already exists, because then we would remove the cluster
+        if to_rename[k] == k:
+            continue
         name_clusters[to_rename[k]] = name_clusters[k]
         del name_clusters[k]
     
