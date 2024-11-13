@@ -1646,7 +1646,8 @@ def is_valid_section_title(section_title):
     
 
 def reevaluate(file_path, new_thresholds=None):
-
+    global compress_output
+    
     if new_thresholds is None:
         new_thresholds = {
             'artifact_answer': 0.8,
@@ -1655,10 +1656,16 @@ def reevaluate(file_path, new_thresholds=None):
     }
 
 
-    output_file = file_path.replace('.json', '_reevaluated.xlsx')
+    if compress_output:
+        output_file = file_path.replace('.json.gz', '_reevaluated.xlsx')
 
-    with open(file_path, 'r') as f:
-        output_json = json.load(f)
+        with gzip.open(file_path, 'rt') as f:
+            output_json = json.load(f)
+    else:
+        output_file = file_path.replace('.json', '_reevaluated.xlsx')
+
+        with open(file_path, 'r') as f:
+            output_json = json.load(f)
 
     # Create a dataframe with the information about the publication: 'Title', 'Abstract', 'Identifiers', 'Claim', 'Claimer', 'Topic'
     publication_info = {
@@ -1729,7 +1736,7 @@ def reevaluate(file_path, new_thresholds=None):
                 'Sentence': citance['sentence'] if citance['sentence'] else '',
             })
     # Sort citances by target (convert #b1 to 1, #b2 to 2, etc. and sort) (if '_' is present, then it is a reference to a table or figure, so first sort by the text and then by the number after the '_')
-    citances = sorted(citances, key=lambda x: (x['Target'].split('_')[0], int(x['Target'].split('_')[1])) if '_' in x['Target'] else ('', int(x['Target'].replace('#b', '')) if x['Target']!='' else -1))
+    citances = sorted(citances, key=lambda x: (x['Target'].split('_')[0], int(x['Target'].split('_')[1])) if '_' in x['Target'] else ('', int(x['Target'].replace('#b', '')) if '#b' in x['Target'] else -1))
     citances_df = pd.DataFrame(citances)
 
     """ NEW STUFF / THRESHOLDS """
@@ -1878,14 +1885,24 @@ def reevaluate(file_path, new_thresholds=None):
                     mentions_df = pd.concat([mentions_df, mentions_row_series.to_frame().T], ignore_index=True)
 
     # Save the reevaluated JSON to a file
-    with open(file_path.replace('.json', '_reevaluated.json'), 'w') as f:
-        json.dump({
-            'publication_info': publication_info_df.to_dict()[''],
-            'research_artifacts': df.to_dict('records'),
-            'mentions': mentions_df.to_dict('records'),
-            'citations': citations_df.to_dict('records'),
-            'citances': citances_df.to_dict('records')
-        }, f, indent=1)
+    if compress_output:
+        with gzip.open(file_path.replace('.json.gz', '_reevaluated.json.gz'), 'wt') as f:
+            json.dump({
+                'publication_info': publication_info_df.to_dict()[''],
+                'research_artifacts': df.to_dict('records'),
+                'mentions': mentions_df.to_dict('records'),
+                'citations': citations_df.to_dict('records'),
+                'citances': citances_df.to_dict('records')
+            }, f, indent=1)
+    else:
+        with open(file_path.replace('.json', '_reevaluated.json'), 'w') as f:
+            json.dump({
+                'publication_info': publication_info_df.to_dict()[''],
+                'research_artifacts': df.to_dict('records'),
+                'mentions': mentions_df.to_dict('records'),
+                'citations': citations_df.to_dict('records'),
+                'citances': citances_df.to_dict('records')
+            }, f, indent=1)
 
     # Save the DataFrame to an Excel file
     with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
@@ -1982,7 +1999,10 @@ def reevaluate(file_path, new_thresholds=None):
     wb.close()
 
     # Save another copy of the Excel file, excluding some of the details, so that it is easier to read and suitable to send to curators
-    output_file_simple = file_path.replace('.json', '_reevaluated_simple.xlsx')
+    if compress_output:
+        output_file_simple = file_path.replace('.json.gz', '_reevaluated_simple.xlsx')
+    else:
+        output_file_simple = file_path.replace('.json', '_reevaluated_simple.xlsx')
 
     # Load the Excel file with the hyperlinks
     wb = load_workbook(output_file)
@@ -2698,6 +2718,11 @@ def extract_research_artifacts_text_list_fast_mode(text_list, split_sentences=Fa
 
 
 def main():
+    global custom_gazetteers, custom_keyphrases, compress_output
+
+    # Set default values to None
+    compress_output = False
+
     parser = argparse.ArgumentParser(description='Bulk inference of citances polarity and intent from PDF files.')
     parser.add_argument('--input_dir', type=str, help='Directory with PDF files to process.', required=True)
     parser.add_argument('--output_dir', type=str, help='Output directory to save the results.', required=True)
@@ -2714,6 +2739,7 @@ def main():
     parser.add_argument('--reevaluate_only', action='store_true', help='Only reevaluate the results using new thresholds, skipping the normal pipeline.')
     parser.add_argument('--filter_input', type=str, help='Wildcard pattern to filter input files to analyze.')
     parser.add_argument('--thresholds', type=str, help='The thresholds to use in the reevaluation. Valid keys are valid_score, ownership_score, and usage_score.')
+    parser.add_argument('--compress_output', action='store_true', help='Compress the output json files to reduce space.')
     parser.add_argument('--verbose', action='store_true', help='Verbose mode.')
 
 
@@ -2741,8 +2767,12 @@ def main():
                 else:
                     res = extract_research_artifacts_text_file(text_path, args.text_mode_split_sentences, args.perform_deduplication, args.insert_fast_mode_gazetteers, args.dataset_gazetteers, args.verbose)
 
-                with open(output_path, 'w') as f:
-                    json.dump(res, f, indent=1)
+                if compress_output:
+                    with gzip.open(output_path+'.gz', 'wt') as f:
+                        json.dump(res, f, indent=1)
+                else:
+                    with open(output_path, 'w') as f:
+                        json.dump(res, f, indent=1)
             
             print('Finished processing all text files. Output saved in:', args.output_dir)
         elif args.parquet_mode:
@@ -2762,8 +2792,12 @@ def main():
                 else:
                     res = extract_research_artifacts_parquet_file(parquet_path, args.filter_paragraphs, args.perform_deduplication, args.insert_fast_mode_gazetteers, args.dataset_gazetteers, args.verbose)
 
-                with open(output_path, 'w') as f:
-                    json.dump(res, f, indent=1)
+                if compress_output:
+                    with gzip.open(output_path+'.gz', 'wt') as f:
+                        json.dump(res, f, indent=1)
+                else:
+                    with open(output_path, 'w') as f:
+                        json.dump(res, f, indent=1)
             
             print('Finished processing all parquet files. Output saved in:', args.output_dir)
         else:
@@ -2791,8 +2825,12 @@ def main():
                 else:
                     res = extract_research_artifacts_pdf(pdf_path, args.xml_mode, args.filter_paragraphs, args.perform_deduplication, args.insert_fast_mode_gazetteers, args.dataset_gazetteers, args.verbose)
 
-                with open(output_path, 'w') as f:
-                    json.dump(res, f, indent=1)
+                if compress_output:
+                    with gzip.open(output_path+'.gz', 'wt') as f:
+                        json.dump(res, f, indent=1)
+                else:
+                    with open(output_path, 'w') as f:
+                        json.dump(res, f, indent=1)
             
             if args.xml_mode:
                 print('Finished processing all TEI XML files. Output saved in:', args.output_dir)
