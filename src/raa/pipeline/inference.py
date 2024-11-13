@@ -1647,7 +1647,7 @@ def is_valid_section_title(section_title):
 
 def reevaluate(file_path, new_thresholds=None):
     global compress_output
-    
+
     if new_thresholds is None:
         new_thresholds = {
             'artifact_answer': 0.8,
@@ -2854,7 +2854,11 @@ def main():
             }
 
             print('Reevaluating the results using new thresholds...')
-            res_files = [f for f in os.listdir(args.output_dir) if f.endswith('.json')]
+            if compress_output:
+                res_files = [f for f in os.listdir(args.output_dir) if f.endswith('.json.gz')]
+            else:
+                res_files = [f for f in os.listdir(args.output_dir) if f.endswith('.json')]
+
             if args.filter_input:
                 res_files = fnmatch.filter(res_files, args.filter_input)
 
