@@ -19,6 +19,8 @@ import fnmatch
 import requests
 import argparse
 import importlib
+import pyarrow as pa
+import pyarrow.parquet as pq
 from bs4 import BeautifulSoup
 from nltk.tokenize import sent_tokenize
 from collections import Counter, OrderedDict
@@ -2576,6 +2578,40 @@ def extract_research_artifacts_parquet_file_fast_mode(input_path, dataset_gazett
     return all_outputs
 
 
+def save_outputs_to_parquet(all_outputs, output_path):
+    """
+    Save the outputs to a parquet file in the specified format.
+    
+    Format:
+    - id: int64
+    - pdf_metadata: large_string (JSON)
+    - research_artifacts: large_string (JSON)
+    """
+    schema = pa.schema([
+        pa.field('id', pa.int64()),
+        pa.field('pdf_metadata', pa.large_string()),
+        pa.field('research_artifacts', pa.large_string()),
+    ])
+    
+    ids = []
+    pdf_metadatas = []
+    research_artifacts = []
+    
+    for output in all_outputs:
+        ids.append(output['pdf_metadata']['id'])
+        pdf_metadatas.append(json.dumps(output['pdf_metadata']))
+        research_artifacts.append(json.dumps(output['research_artifacts']))
+    
+    # Create PyArrow table
+    table = pa.table({
+        'id': ids,
+        'pdf_metadata': pdf_metadatas,
+        'research_artifacts': research_artifacts
+    }, schema=schema)
+    
+    pq.write_table(table, output_path)
+
+
 def extract_research_artifacts_doimode(data, filter_paragraphs=True, perform_deduplication=True, insert_fast_mode_gazetteers=False, dataset_gazetteers=None, verbose=True):
     pdf_metadata = {
         'id': data['doi'],
@@ -2741,7 +2777,7 @@ def main():
     parser.add_argument('--thresholds', type=str, help='The thresholds to use in the reevaluation. Valid keys are valid_score, ownership_score, and usage_score.')
     parser.add_argument('--compress_output', action='store_true', help='Compress the output json files to reduce space.')
     parser.add_argument('--verbose', action='store_true', help='Verbose mode.')
-
+    parser.add_argument("--output_format", type=str, default="json", choices=["json", "parquet"], help="Output format: json or parquet")
 
     args = parser.parse_args()
 
@@ -2785,19 +2821,26 @@ def main():
             for parquet_file in parquet_files:
                 print(f'Processing {parquet_file}')
                 parquet_path = os.path.join(args.input_dir, parquet_file)
-                output_path = os.path.join(args.output_dir, parquet_file.replace('.parquet', '.json'))
+                if args.output_format == "parquet":
+                    output_path = os.path.join(args.output_dir, parquet_file)
+                else:
+                    output_path = os.path.join(args.output_dir, parquet_file.replace('.parquet', '.json'))
 
                 if args.fast_mode:
                     res = extract_research_artifacts_parquet_file_fast_mode(parquet_path, args.dataset_gazetteers, args.verbose)
                 else:
                     res = extract_research_artifacts_parquet_file(parquet_path, args.filter_paragraphs, args.perform_deduplication, args.insert_fast_mode_gazetteers, args.dataset_gazetteers, args.verbose)
 
-                if compress_output:
-                    with gzip.open(output_path+'.gz', 'wt') as f:
-                        json.dump(res, f, indent=1)
+                if args.output_format == "parquet":
+                    save_outputs_to_parquet(res, output_path)
+
                 else:
-                    with open(output_path, 'w') as f:
-                        json.dump(res, f, indent=1)
+                    if compress_output:
+                        with gzip.open(output_path+'.gz', 'wt') as f:
+                            json.dump(res, f, indent=1)
+                    else:
+                        with open(output_path, 'w') as f:
+                            json.dump(res, f, indent=1)                
             
             print('Finished processing all parquet files. Output saved in:', args.output_dir)
         else:

@@ -1,0 +1,3 @@
+Ask petros to help with modifying the code.
+
+see /data_forge/src/semantic_scholar/scripts/transform_raa_output_of_tools.py
