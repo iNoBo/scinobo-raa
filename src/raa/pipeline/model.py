@@ -1,6 +1,7 @@
 import os
 import torch
 import importlib
+from functools import lru_cache
 from peft import PeftModel
 from transformers import T5Tokenizer, T5ForConditionalGeneration
 
@@ -78,7 +79,21 @@ def classify_text(prompt, choices, top_k, **kwargs):
 
     outputs = model.generate(input_ids=inputs, **kwargs)
 
-    predictions = [[[tokenizer.decode(x[1].item()), torch.exp(x[0]).item()] for x in zip(outputs.scores[i][0].topk(top_k).values, outputs.scores[i][0].topk(top_k).indices)] for i in range(len(outputs.scores))]
+    return scores_to_relative_probs([step_scores[0] for step_scores in outputs.scores], choices, top_k)
+
+
+@lru_cache(maxsize=None)
+def decode_token(token_id):
+    return tokenizer.decode(token_id)
+
+
+def scores_to_relative_probs(step_scores, choices, top_k):
+    # One topk per generation step, moved to Python in bulk, with cached token decoding: the per-token
+    # decode/.item() calls were the main CPU cost of classify_text
+    predictions = []
+    for scores in step_scores:
+        values, indices = scores.topk(top_k)
+        predictions.append([[decode_token(i), p] for i, p in zip(indices.tolist(), torch.exp(values).tolist())])
     # Solve the bug where some indices have the same token value (e.g. Yes has 2 indices)
     predictions_dict = []
     for prediction in predictions:
@@ -93,6 +108,43 @@ def classify_text(prompt, choices, top_k, **kwargs):
     rel_probs = compute_relative_probs(choices, predictions_dict)
 
     return rel_probs
+
+
+def length_sorted_batches(prompts, batch_size):
+    # Indices of the prompts in batches of similar length, to keep the padding small
+    order = sorted(range(len(prompts)), key=lambda i: len(prompts[i]))
+    return [order[i:i + batch_size] for i in range(0, len(order), batch_size)]
+
+
+def infer_text_batch(prompts, batch_size=16, **kwargs):
+    # infer_text(prompt, **kwargs)[0] for every prompt, with batch_size prompts per generate call
+    results = [None] * len(prompts)
+    for idx in length_sorted_batches(prompts, batch_size):
+        inputs = tokenizer([prompts[i] for i in idx], return_tensors="pt", padding=True).to(model.device)
+        outputs = model.generate(**inputs, **kwargs)
+        for i, text in zip(idx, tokenizer.batch_decode(outputs, skip_special_tokens=True)):
+            results[i] = text
+    return results
+
+
+def classify_text_batch(prompts, choices, top_k, batch_size=16, **kwargs):
+    # classify_text(prompt, choices, top_k, **kwargs) for every prompt, with batch_size prompts per generate call
+    if 'output_scores' not in kwargs:
+        kwargs['output_scores'] = True
+    if 'return_dict_in_generate' not in kwargs:
+        kwargs['return_dict_in_generate'] = True
+
+    results = [None] * len(prompts)
+    for idx in length_sorted_batches(prompts, batch_size):
+        inputs = tokenizer([prompts[i] for i in idx], return_tensors="pt", padding=True).to(model.device)
+        outputs = model.generate(**inputs, **kwargs)
+        generated = outputs.sequences[:, 1:]  # without the decoder start token
+        for row, i in enumerate(idx):
+            # Keep the steps this prompt generates on its own: up to and including its first EOS
+            eos = (generated[row] == tokenizer.eos_token_id).nonzero()
+            n_steps = eos[0].item() + 1 if len(eos) else len(outputs.scores)
+            results[i] = scores_to_relative_probs([outputs.scores[s][row] for s in range(n_steps)], choices, top_k)
+    return results
 
 
 def multilabel_classify_text(prompt, choices, top_k, **kwargs):

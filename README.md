@@ -101,6 +101,7 @@ Other flags:
 - `--reevaluate_only`: Only reevaluate the results using new thresholds, skipping the normal pipeline.
 - `--thresholds`: Specify the thresholds for the re-evaluation. Should be a dict, valid keys are valid_score, ownership_score, and usage_score.
 - `--verbose`: Verbose mode.
+- `--batch_size`: Candidates per model call (default 1, or the `RAA_BATCH_SIZE` environment variable). Batching runs each question over many candidate sentences in one `generate` call, which is faster; with 1 the results are those of the unbatched pipeline.
 - `--parquet_mode`: Run the pipeline for parquet files instead of PDFs that contain the columns: "id", "sections".
 - `--filter_input`: Wildcard pattern to filter input files to analyze.
 

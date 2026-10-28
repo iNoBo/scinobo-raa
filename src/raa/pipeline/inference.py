@@ -23,7 +23,7 @@ from bs4 import BeautifulSoup
 from nltk.tokenize import sent_tokenize
 from collections import Counter, OrderedDict
 
-from raa.pipeline.model import infer_text, classify_text
+from raa.pipeline.model import infer_text, classify_text, infer_text_batch, classify_text_batch
 
 BASE_PATH = importlib.resources.files(__package__.split(".")[0])
 DATA_PATH = os.path.join(BASE_PATH, 'data')
@@ -956,6 +956,22 @@ def classify(context: str, question: str, choices: tuple[str]) -> str:
     return classify_text(json_data['text'], json_data['choices'], json_data['top_k'], **json_data['gen_config'])
 
 
+# Candidates per model call in the pipeline (RAA_BATCH_SIZE or --batch_size); 1 gives the unbatched results exactly
+batch_size = int(os.getenv('RAA_BATCH_SIZE', '1'))
+
+
+def classify_batch(contexts: list, questions: list, choices: tuple[str]) -> list:
+    # classify(context, question, choices) for every (context, question)
+    prompts = [make_qa_prompt(c, q) for c, q in zip(contexts, questions)]
+    return classify_text_batch(prompts, choices, 500, batch_size=batch_size, max_new_tokens=256)
+
+
+def answer_batch(contexts: list, questions: list) -> list:
+    # answer(context, question) for every (context, question)
+    prompts = [make_qa_prompt(c, q) for c, q in zip(contexts, questions)]
+    return infer_text_batch(prompts, batch_size=batch_size, max_new_tokens=256)
+
+
 def answer(context: str, question: str) -> str:
     prompt = make_qa_prompt(context, question)
     json_data = {
@@ -1174,6 +1190,48 @@ def extract_artifacts_candidate(cand_sent_id:str, cand_sent_text: str, cand_sent
     return result_dict
 
 
+def extract_artifacts_candidates_batch(candidates: list):
+    # extract_artifacts_candidate for a list of (sentence, type, trigger offsets), asking every question for all the
+    # candidates at once (batch_size per model call): validity first, then the metadata questions for the valid ones
+    texts = [s[:off[0]] + '<m>' + s[off[0]:off[1]] + '</m>' + s[off[1]:] for s, _, off in candidates]
+    types = [map_cand_type[t] for _, t, _ in candidates]
+    results = [dict() for _ in candidates]
+
+    artifact_answers = classify_batch(texts, [f'Is there a valid {t} defined in the <m> and </m> tags?' for t in types], ('Yes', 'No'))
+    valid = []
+    for i, artifact_answer in enumerate(artifact_answers):
+        results[i]['artifact_answer'] = artifact_answer
+        artifact_answer_text = sorted(artifact_answer, key=lambda x:artifact_answer[x], reverse=True)[0]
+        if not (artifact_answer_text == 'No' or artifact_answer['Yes'] < normalize_threshold(thresholds['artifact_answer'], len(artifact_answer))):
+            valid.append(i)
+    valid_texts = [texts[i] for i in valid]
+    valid_types = [types[i] for i in valid]
+
+    for key, question in [
+        ('name_answer', 'What is the name of the {} defined in the <m> and </m> tags?'),
+        ('license_answer', 'What is the license of the {} defined in the <m> and </m> tags?'),
+        ('version_answer', 'What is the version of the {} defined in the <m> and </m> tags?'),
+        ('url_answer', 'What is the URL of the {} defined in the <m> and </m> tags?'),
+    ]:
+        for i, ans in zip(valid, answer_batch(valid_texts, [question.format(t) for t in valid_types])):
+            results[i][key] = ans
+
+    # Check if the name is a keyword (excluding gazetteers)
+    for i in valid:
+        if results[i]['name_answer'].lower().strip() in data_phrases + software_phrases:
+            results[i]['name_answer'] = 'N/A'
+
+    for key, question in [
+        ('ownership_answer', 'Is the {} defined in the <m> and </m> tags introduced or created by the authors of the publication in the snippet above?'),
+        ('reuse_answer', 'Is the {} defined in the <m> and </m> tags used or adopted by the authors of the publication in the snippet above?'),
+    ]:
+        for i, ans in zip(valid, classify_batch(valid_texts, [question.format(t) for t in valid_types], ('Yes', 'No'))):
+            results[i][key] = ans
+            results[i][key + '_text'] = sorted(ans, key=lambda x:ans[x], reverse=True)[0]
+
+    return results
+
+
 def extract_artifacts_candidate_text_list(cand_sent_id:str, cand_sent_text: str, cand_type: str, cand_trigger: str, cand_trigger_off: tuple):
     # TODO: ADD BIGGER CONTEXT (PARAGRAPH, SECTION) FOR METADATA (MAYBE IT IS WISE TO DO IT IN A SECOND RUN WHEN NEEDED OR WITH ALL THE CONTEXT FROM "artifacts_cache"?)
     # TODO: IF WE FIND THAT IT IS THE SAME ARTIFACT AS ONE IN THE CACHE, WE CAN ASK ONLY THE QUESTIONS THAT HAVE NOT BEEN ANSWERED YET (THE N/A) (USING "candidates_metadata")
@@ -1388,6 +1446,9 @@ def extract_research_artifacts_pipeline(pdf_metadata: dict, research_artifact_ga
     
     # discarded_candidates = [[x, ' '.join(pdf_metadata['sections'][x[2]][1][x[3]])] for x in flat_candidates if (x[2], x[3]) not in valid_paragraph_indices[x[0]]]
 
+    # Run the model on all the analyzed candidates up front, batch_size candidates per call
+    analyzed_results = iter(extract_artifacts_candidates_batch([(pdf_metadata['sections'][x[2]][1][x[3]][x[4]], x[0], x[5]) for x in flat_candidates if x[-1] != 'skip']))
+
     if verbose:
         t_flat_candidates = tqdm(enumerate(flat_candidates), total=len(flat_candidates))
     else:
@@ -1449,7 +1510,7 @@ def extract_research_artifacts_pipeline(pdf_metadata: dict, research_artifact_ga
                 'section_title': pdf_metadata['sections'][cand_sent[2]][0],
                 'citations': cand_sent_citations,
                 'urls': cand_sent_urls,
-                'results': extract_artifacts_candidate(cand_sent_id, cand_sent_text, cand_sent_paragraph, cand_sent_section, cand_sent[0], cand_sent[1], cand_sent[5]),
+                'results': next(analyzed_results),
                 'skipped': False
             }
 
@@ -2718,7 +2779,7 @@ def extract_research_artifacts_text_list_fast_mode(text_list, split_sentences=Fa
 
 
 def main():
-    global custom_gazetteers, custom_keyphrases, compress_output
+    global custom_gazetteers, custom_keyphrases, compress_output, batch_size
 
     # Set default values to None
     compress_output = False
@@ -2741,9 +2802,13 @@ def main():
     parser.add_argument('--thresholds', type=str, help='The thresholds to use in the reevaluation. Valid keys are valid_score, ownership_score, and usage_score.')
     parser.add_argument('--compress_output', action='store_true', help='Compress the output json files to reduce space.')
     parser.add_argument('--verbose', action='store_true', help='Verbose mode.')
+    parser.add_argument('--batch_size', type=int, help='Candidates per model call (default: RAA_BATCH_SIZE or 1, the unbatched behaviour). Larger values run faster.')
 
 
     args = parser.parse_args()
+
+    if args.batch_size:
+        batch_size = args.batch_size
 
     # Create the output directory if it does not exist
     if not os.path.exists(args.output_dir):
